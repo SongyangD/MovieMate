@@ -20,7 +20,7 @@ connection.connect((err) => err && console.log(err));
 const author = async function(req, res) {
   // TODO (TASK 1): replace the values of name and pennKey with your own
   const name = 'Shengyin Si';
-  const pennKey = 'sisy';
+  const pennKey = 'lalalala';
 
   // checks the value of type the request parameters
   // note that parameters are required and are specified in server.js in the endpoint by a colon (e.g. /author/:type)
