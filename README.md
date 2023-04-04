@@ -9,5 +9,5 @@ Shengyin Si: sisy@seas.upenn.edu; Github: https://github.com/Shelly0104
 
 Yahan Xu: yahan@seas.upenn.edu; Github: https://github.com/gooyoowoo
 
-Yu Yang: yuyang89@seas.upenn.edu; Github:https://github.com/SongyangD
+Yu Yang: yuyang89@seas.upenn.edu; Github:https://github.com/yuyang2048
 
