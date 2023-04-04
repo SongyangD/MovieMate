@@ -93,39 +93,39 @@ const song = async function(req, res) {
   });
 }
 
-// Route 4: GET /album/:album_id
-const album = async function(req, res) {
+// Route 4: GET /movies/:imdb_title_id
+const movie = async function(req, res) {
   // TODO (TASK 5): implement a route that given a album_id, returns all information about the album
-  const album_id = req.params.album_id;
+  const movie_id = req.params.imdb_title_id;
   connection.query(`
     SELECT *
-    FROM Albums
-    WHERE album_id = '${album_id}'
+    FROM movie_data
+    WHERE movie_id = '${movie_id}'
     `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
-      res.json({}); // replace this with your implementation
+      res.json({}); 
     } else {
       res.json(data[0]);
     }
   });
 }
 
-// Route 5: GET /albums
-const albums = async function(req, res) {
+// Route 5: GET /movies
+const movies = async function(req, res) {
   // TODO (TASK 6): implement a route that returns all albums ordered by release date (descending)
   // Note that in this case you will need to return multiple albums, so you will need to return an array of objects
   var query = `
     SELECT *
-    FROM Albums
-    ORDER BY release_date desc;
+    FROM movie_data
+    ORDER BY year desc;
   `;
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
-      res.json({}); // replace this with your implementation
+      res.json({}); 
     } else {
-      res.json(data);// replace this with your implementation
+      res.json(data);
     }
   });
 }
@@ -257,31 +257,28 @@ const top_albums = async function(req, res) {
   }
 }
 
-// Route 9: GET /search_albums
-const search_songs = async function(req, res) {
+// Route 9: GET /search_movies
+const search_movies = async function(req, res) {
   // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
   // Some default parameters have been provided for you, but you will need to fill in the rest
   const title = req.query.title ?? '';
-  const durationLow = req.query.duration_low ?? 60;
-  const durationHigh = req.query.duration_high ?? 660;
-  const playsLow = req.query.plays_low ?? 0;
-  const playsHigh = req.query.plays_high ?? 1100000000;
-  const danceabilityLow = req.query.danceability_low ?? 0;
-  const danceabilityHigh = req.query.danceability_high ?? 1;
-  const energyLow = req.query.energy_low ?? 0;
-  const energyHigh = req.query.energy_high ?? 1;
-  const valenceLow = req.query.valence_low ?? 0;
-  const valenceHigh = req.query.valence_high ?? 1;
-  const explicit = req.query.explicit === 'true' ? 1 : 0;
+  const yearLow = req.query.duration_low ?? 1900;
+  const yearHigh = req.query.duration_high ?? 2023;
+  const country = req.query.country ?? '';
+  const language = req.query.language ?? '';
+  const genre = req.query.genre ?? '';
+  const isOscar = req.query.Oscar_nominated === 'true' ? 'true' : 'false';
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
 
   var query1 = `
-    SELECT song_id, album_id, title, number,
-    duration, plays, danceability, energy, valence, tempo, key_mode, explicit
-    FROM Songs 
-    WHERE explicit <= ${explicit} AND title LIKE '%${title}%' AND duration >= ${durationLow} AND duration <= ${durationHigh} 
-    AND  plays >= ${playsLow} AND plays <= ${playsHigh} AND danceability >= ${danceabilityLow} AND danceability <= ${danceabilityHigh}
-    AND  energy >= ${energyLow} AND energy <= ${energyHigh} AND valence >= ${valenceLow} AND valence <= ${valenceHigh}
-    ORDER BY title;
+    SELECT title, year, avg_vote
+    FROM movie_data
+    WHERE title LIKE '%${title}'AND Oscar_nominated = ${isOscar} AND year >= ${yearLow} AND year <= ${yearHigh} 
+    AND genre LIKE '%${genre}%' AND country LIKE '%${country}%' AND language LIKE '%${language}%'
+    ORDER BY year DESC;
+    LIMIT ${offset}, ${pageSize};
   `;
 
   connection.query(query1, (err, data) => {

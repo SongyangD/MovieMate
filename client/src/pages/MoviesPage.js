@@ -5,10 +5,10 @@ import { NavLink } from 'react-router-dom';
 const config = require('../config.json');
 
 export default function AlbumsPage() {
-  const [albums, setAlbums] = useState([]);
+  const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/albums`)
+    fetch(`http://${config.server_host}:${config.server_port}/movies`)
       .then(res => res.json())
       .then(resJson => setAlbums(resJson));
   }, []);
@@ -22,20 +22,20 @@ export default function AlbumsPage() {
   return (
     // TODO (TASK 22): replace the empty object {} in the Container attribute sx with flexFormat. Observe the change to the Albums page. Then uncomment the code to display the cover image and once again observe the change, i.e. what happens to the layout now that each album card has a fixed width?
     <Container style={flexFormat}>
-      {albums.map((album) =>
+      {movies.map((movie) =>
         <Box
-          key={album.album_id}
+          key={movie.imdb_title_id}
           p={3}
           m={2}
           style={{ background: 'white', borderRadius: '16px', border: '2px solid #000' }}
         >
           {
           <img
-            src={album.thumbnail_url}
-            alt={`${album.title} album art`}
+            src={movie.poster_url}
+            alt={`${movie.title}`}
           />
           }
-          <h4><NavLink to={`/albums/${album.album_id}`}>{album.title}</NavLink></h4>
+          <h4><NavLink to={`/movies/${movie.album_id}`}>{movie.title}</NavLink></h4>
         </Box>
       )}
     </Container>
