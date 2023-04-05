@@ -4,13 +4,13 @@ import { NavLink } from 'react-router-dom';
 
 const config = require('../config.json');
 
-export default function AlbumsPage() {
+export default function MoviesPage() {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/movies`)
       .then(res => res.json())
-      .then(resJson => setAlbums(resJson));
+      .then(resJson => setMovies(resJson));
   }, []);
 
   // flexFormat provides the formatting options for a "flexbox" layout that enables the album cards to
@@ -35,7 +35,7 @@ export default function AlbumsPage() {
             alt={`${movie.title}`}
           />
           }
-          <h4><NavLink to={`/movies/${movie.album_id}`}>{movie.title}</NavLink></h4>
+          <h4><NavLink to={`/movies/${movie.imdb_title_id}`}>{movie.title}</NavLink></h4>
         </Box>
       )}
     </Container>
