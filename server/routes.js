@@ -93,10 +93,34 @@ connection.connect((err) => err && console.log(err));
 //   });
 // }
 
+/************************
+ * MOVIE ROUTES *
+ ************************/
 // Sydu
-// Route 4: GET /movies/:movie_id
+// Route 1: GET /movies
+const movies = async function(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+  var query = `
+    SELECT *
+    FROM movie_data
+    ORDER BY year desc
+    LIMIT ${offset}, ${pageSize};
+  `;
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+// Sydu
+// Route 2: GET /movies/:movie_id
 const movie = async function(req, res) {
-  // TODO (TASK 5): implement a route that given a album_id, returns all information about the album
   const movie_id = req.params.movie_id;
   connection.query(`
     SELECT *
@@ -112,16 +136,57 @@ const movie = async function(req, res) {
   });
 }
 
-
 // Sydu
-// Route 5: GET /movies
-const movies = async function(req, res) {
-  // TODO (TASK 6): implement a route that returns all albums ordered by release date (descending)
-  // Note that in this case you will need to return multiple albums, so you will need to return an array of objects
-  var query = `
+// Route 3: GET /search_movies
+const search_movies = async function(req, res) {
+  const title = req.query.title ?? '';
+  const yearLow = req.query.year_low ?? 1900;
+  const yearHigh = req.query.year_high ?? 2023;
+  const country = req.query.country ?? '';
+  const language = req.query.language ?? '';
+  const genre = req.query.genre ?? '';
+  const isOscar = req.query.Oscar_nominated === 'true' ? 1 : 0;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  var query1 = `
     SELECT *
     FROM movie_data
-    ORDER BY year desc;
+    WHERE title LIKE '%${title}%'
+    AND Oscar_nominated = ${isOscar} 
+    AND year BETWEEN ${yearLow} AND year <= ${yearHigh} 
+    AND genre LIKE '%${genre}%' 
+    AND country LIKE '%${country}%' 
+    AND language LIKE '%${language}%'
+    ORDER BY year DESC
+    LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query1, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); // replace this with your implementation
+    } else {
+      res.json(data);// replace this with your implementation
+    }
+  });
+}
+
+/************************
+ * PEOPLE ROUTES *
+ ************************/
+
+// Route 4: GET /people
+const people = async function(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+  var query = `
+    SELECT *
+    FROM people
+    ORDER BY name ASC
+    LIMIT ${offset}, ${pageSize};
   `;
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
@@ -129,6 +194,107 @@ const movies = async function(req, res) {
       res.json({}); 
     } else {
       res.json(data);
+    }
+  });
+}
+
+// Route 5: GET /people/:person_id
+const person = async function(req, res) {
+  // TODO (TASK 5): implement a route that given a album_id, returns all information about the album
+  const person_id = req.params.person_id;
+  connection.query(`
+    SELECT *
+    FROM people
+    WHERE imdb_name_id = '${person_id}'
+    `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data[0]);
+    }
+  });
+}
+
+// Route 6: GET /search_people
+const search_people = async function(req, res) {
+  const name = req.query.name ?? '';
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  var query1 = `
+    SELECT *
+    FROM people
+    WHERE name LIKE '%${name}%'
+    ORDER BY name ASC
+    LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query1, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); // replace this with your implementation
+    } else {
+      res.json(data);// replace this with your implementation
+    }
+  });
+}
+
+/************************
+ * OSCAR ROUTES *
+ ************************/
+
+// Route 7: GET /oscar_movies
+const oscar_movies = async function(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+  var query = `
+    SELECT *
+    FROM movie_data
+    WHERE Oscar_nominated = true
+    ORDER BY year DESC
+    LIMIT ${offset}, ${pageSize};
+  `;
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+// Route 8: GET /search_oscar_winner
+const search_oscar_winner = async function(req, res) {
+  const country = req.query.country ?? '';
+  const language = req.query.language ?? '';
+  const genre = req.query.genre ?? '';
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  var query1 = `
+  SELECT *
+  FROM oscar O, movie_data M 
+  WHERE genre LIKE '%${genre}%' 
+  AND country LIKE '%${country}%' 
+  AND language LIKE '%${language}%'
+  AND M.imdb_title_id IN 
+    (SELECT O.imdb_title_id
+    FROM oscar O 
+    WHERE O.winner = True)  
+  LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query1, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); // replace this with your implementation
+    } else {
+      res.json(data);// replace this with your implementation
     }
   });
 }
@@ -155,6 +321,7 @@ const movies = async function(req, res) {
 //     }
 //   });
 // }
+
 
 /************************
  * ADVANCED INFO ROUTES *
@@ -261,53 +428,21 @@ const movies = async function(req, res) {
 //   }
 // }
 
-// Sydu
-// Route 9: GET /search_movies
-const search_movies = async function(req, res) {
-  // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
-  // Some default parameters have been provided for you, but you will need to fill in the rest
-  const title = req.query.title ?? '';
-  const yearLow = req.query.year_low ?? 1900;
-  const yearHigh = req.query.year_high ?? 2023;
-  const country = req.query.country ?? '';
-  const language = req.query.language ?? '';
-  const genre = req.query.genre ?? '';
-  const isOscar = req.query.Oscar_nominated === 'true' ? 1 : 0;
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
 
-  var query1 = `
-    SELECT title, year, avg_vote, country, genre, language, Oscar_nominated
-    FROM movie_data
-    WHERE title LIKE '%${title}%'
-    AND Oscar_nominated = ${isOscar} 
-    AND year BETWEEN ${yearLow} AND year <= ${yearHigh} 
-    AND genre LIKE '%${genre}%' 
-    AND country LIKE '%${country}%' 
-    AND language LIKE '%${language}%'
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
-  `;
-
-  connection.query(query1, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({}); // replace this with your implementation
-    } else {
-      res.json(data);// replace this with your implementation
-    }
-  });
-}
 
 module.exports = {
+  movie,
+  movies,
+  search_movies,
+  person,
+  people,
+  search_people,
+  oscar_movies,
+  search_oscar_winner,
   // author,
   // random,
   // song,
-  movie,
-  movies,
   // album_songs,
   // top_songs,
   // top_albums,
-  search_movies,
 }
