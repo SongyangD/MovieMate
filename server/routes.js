@@ -70,6 +70,98 @@ const random = async function(req, res) {
   });
 }
 
+//Homepage: recommend an oscar winning movie to the user
+const oscarMovieRecommended = async function (req,res){
+
+  var query = `
+  WITH random_movie AS (
+    SELECT imdb_title_id
+    FROM oscar
+    WHERE winner = true
+    ORDER BY RAND()
+    LIMIT 1
+  )
+  SELECT
+    md.title,
+    md.poster_url,
+    md.description,
+    COUNT(o.imdb_title_id) AS num_nominations,
+    md.year,
+    md.duration,
+    p.name AS director_name
+  FROM movie_data AS md
+  JOIN oscar AS o
+  ON md.imdb_title_id = o.imdb_title_id
+  JOIN random_movie
+  ON md.imdb_title_id = random_movie.imdb_title_id
+  JOIN movie_people AS mp
+  ON md.imdb_title_id = mp.imdb_title_id
+    AND mp.category = 'director'
+  JOIN people AS p
+  ON mp.imdb_name_id = p.imdb_name_id
+  GROUP BY md.title,
+  md.poster_url,
+  md.description,
+  md.year,
+  md.duration,
+  p.name AS director_name
+  LIMIT 1;  
+  `
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+
+const  recent10genre = async function(req, res) {
+  // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
+  // Most of the code is already written for you, you just need to fill in the query
+  const genure = req.params.genure;
+
+  var query = `
+  SELECT title, poster_url, description
+    FROM movie_data
+    WHERE genre Like '%${genre}%'
+    Order by year DESC, votes DESC
+    LIMIT 10
+  `
+  connection.query(query,(err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data[0]);
+    }
+  });
+}
+
+const  top10language = async function(req, res) {
+  // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
+  // Most of the code is already written for you, you just need to fill in the query
+  const genure = req.params.genure;
+
+  var query = `
+  SELECT title, poster_url, description
+    FROM movie_data
+    WHERE genre Like '%${genre}%'
+    Order by avg_vote DESC
+    LIMIT 10
+  `
+  connection.query(query,(err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data[0]);
+    }
+  });
+}
+
 /********************************
  * BASIC SONG/ALBUM INFO ROUTES *
  ********************************/
