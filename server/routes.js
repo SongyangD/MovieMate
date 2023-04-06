@@ -190,12 +190,12 @@ const  recent10genre = async function(req, res) {
 const  top10language = async function(req, res) {
   // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
   // Most of the code is already written for you, you just need to fill in the query
-  const genure = req.params.genure;
+  const language = req.params.genure;
 
   var query = `
   SELECT title, poster_url, description
     FROM movie_data
-    WHERE genre Like '%${genre}%'
+    WHERE genre Like '%${language}%'
     Order by avg_vote DESC
     LIMIT 10
   `
@@ -725,5 +725,5 @@ module.exports = {
   // search_songs,
   oscarMovieRecommended,
   recent10genre,
-  top10language
+  top10language,
 }

@@ -35,7 +35,7 @@ app.get('/avg_vote_person/:person_id', routes.avg_vote_person);
 app.get('/search_songs', routes.search_songs);
 app.get('/oscar_recommend', routes.oscarMovieRecommended);
 app.get('/recent10genre/:genre', routes.recent10genre);
-app.get('/top10language/:language', routes.toplanguage);
+app.get('/top10language/:language', routes.top10language);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
