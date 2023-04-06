@@ -20,8 +20,8 @@ app.get('/top_songs', routes.top_songs);
 app.get('/top_albums', routes.top_albums);
 app.get('/search_songs', routes.search_songs);
 app.get('/oscar_recommend', routes.oscarMovieRecommended);
-app.get('/recent10genre', routes.recent10genre);
-app.get('/top10language', routes.top10language);
+app.get('/recent10genre/:genre', routes.recent10genre);
+app.get('/top10language/:language', routes.toplanguage);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
