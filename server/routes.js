@@ -93,8 +93,96 @@ const song = async function(req, res) {
   });
 }
 
-// Route 4: GET /album/:album_id
-const album = async function(req, res) {
+// Sydu
+// Route 3: GET /search_movies
+const search_movies = async function(req, res) {
+  const title = req.query.title ?? '';
+  const yearLow = req.query.year_low ?? 1900;
+  const yearHigh = req.query.year_high ?? 2023;
+  const country = req.query.country ?? '';
+  const language = req.query.language ?? '';
+  const genre = req.query.genre ?? '';
+  const isOscar = req.query.Oscar_nominated === 'true' ? 1 : 0;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  var query1 = `
+    SELECT *
+    FROM movie_data
+    WHERE title LIKE '%${title}%'
+    AND Oscar_nominated = ${isOscar} 
+    AND year BETWEEN ${yearLow} AND year <= ${yearHigh} 
+    AND genre LIKE '%${genre}%' 
+    AND country LIKE '%${country}%' 
+    AND language LIKE '%${language}%'
+    ORDER BY year DESC
+    LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query1, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+// Route 4: GET /top20_movies
+const top20_movies = async function(req, res) {
+  // const page = parseInt(req.query.page) || 1;
+  // const pageSize = parseInt(req.query.page_size) || 20;
+  // const offset = (page - 1) * pageSize;
+  const genre = req.query.genre ?? '';
+
+  var query = `
+    SELECT *
+    FROM movie_data
+    WHERE genre LIKE '%${genre}%'
+    ORDER BY avg_vote DESC
+    LIMIT 20;
+  `;
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+// Route 5: GET /total_movie_num
+
+/************************
+ * PEOPLE ROUTES *
+ ************************/
+
+// Route 6: GET /people
+const people = async function(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+  var query = `
+    SELECT *
+    FROM people
+    ORDER BY name ASC
+    LIMIT ${offset}, ${pageSize};
+  `;
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+// Route 7: GET /people/:person_id
+const person = async function(req, res) {
   // TODO (TASK 5): implement a route that given a album_id, returns all information about the album
   const album_id = req.params.album_id;
   connection.query(`
@@ -111,10 +199,41 @@ const album = async function(req, res) {
   });
 }
 
-// Route 5: GET /albums
-const albums = async function(req, res) {
-  // TODO (TASK 6): implement a route that returns all albums ordered by release date (descending)
-  // Note that in this case you will need to return multiple albums, so you will need to return an array of objects
+// Route 8: GET /search_people
+const search_people = async function(req, res) {
+  const name = req.query.name ?? '';
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  var query1 = `
+    SELECT *
+    FROM people
+    WHERE name LIKE '%${name}%'
+    ORDER BY name ASC
+    LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query1, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); // replace this with your implementation
+    } else {
+      res.json(data);// replace this with your implementation
+    }
+  });
+}
+
+
+/************************
+ * OSCAR ROUTES *
+ ************************/
+
+// Route 9: GET /oscar_movies
+const oscar_movies = async function(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
   var query = `
     SELECT *
     FROM Albums
@@ -123,9 +242,65 @@ const albums = async function(req, res) {
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+// Route 10: GET /search_oscar_winner
+// return all movie info of the oscar winner by some criteria
+const search_oscar_winner = async function(req, res) {
+  const country = req.query.country ?? '';
+  const language = req.query.language ?? '';
+  const genre = req.query.genre ?? '';
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  var query1 = `
+  SELECT *
+  FROM oscar O, movie_data M 
+  WHERE genre LIKE '%${genre}%' 
+  AND country LIKE '%${country}%' 
+  AND language LIKE '%${language}%'
+  AND M.imdb_title_id IN 
+    (SELECT O.imdb_title_id
+    FROM oscar O 
+    WHERE O.winner = True)  
+  LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query1, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
       res.json({}); // replace this with your implementation
     } else {
       res.json(data);// replace this with your implementation
+    }
+  });
+}
+
+// Route 10: GET /oscar_ranking
+// movies with highest number of nomination to lowest
+const oscar_ranking = async function(req, res){
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+
+  connection.query(`
+  SELECT imdb_title_id, name, COUNT(imdb_title_id)AS Frequency
+  FROM oscar
+  GROUP BY imdb_title_id
+  ORDER BY Frequency DESC
+  LIMIT ${offset}, ${pageSize};
+  `, (err, data) => {
+    if (err || data.length === 0 ){
+      console.log(err);
+      res.json({});
+    }else{
+      res.json(data);
     }
   });
 }
@@ -155,6 +330,74 @@ const album_songs = async function(req, res) {
 /************************
  * ADVANCED INFO ROUTES *
  ************************/
+
+// Route 12: GET /movie_count
+// return a the total number of movies by selected criteria
+const movie_count = async function(req, res) {
+  const country = req.query.country ?? '';
+  const language = req.query.language ?? '';
+  const genre = req.query.genre ?? '';
+  const year = req.query.year;
+
+   var query1 =`
+   SELECT COUNT(imdb_title_id) as num
+   FROM movie_data
+   WHERE genre LIKE '%${genre}%' 
+   AND country LIKE '%${country}%' 
+   AND language LIKE '%${language}%'
+   AND year = ${year};
+   `;
+
+   var query2 =`
+   SELECT COUNT(imdb_title_id) as num
+   FROM movie_data
+   WHERE genre LIKE '%${genre}%' 
+   AND country LIKE '%${country}%' 
+   AND language LIKE '%${language}%';
+   `;
+
+   if(year){
+    connection.query(query1, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data[0]);
+      }
+    });
+   }else{
+    connection.query(query2, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data[0]);
+      }
+    });
+   } 
+};
+
+// Route : GET /avg_vote_person/:person_id
+//Average Vote (multiple tables): return the averge vote of the given actor's movies.
+const avg_vote_person = async function(req, res){
+  const person_id = req.params.person_id;
+
+  var query = `
+  SELECT AVG(M.avg_vote) as avg_rating
+  FROM movie_data M, movie_people MP, people P
+  WHERE M.imdb_title_id = MP.imdb_title_id 
+  AND MP.imdb_name_id = P.imdb_name_id 
+  AND P.imdb_name_id = '${person_id}';
+  `
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data[0]);
+    }
+  });
+};
 
 // Route 7: GET /top_songs
 const top_songs = async function(req, res) {
@@ -295,13 +538,23 @@ const search_songs = async function(req, res) {
 }
 
 module.exports = {
-  author,
-  random,
-  song,
-  album,
-  albums,
-  album_songs,
-  top_songs,
-  top_albums,
-  search_songs,
+  movie,
+  movies,
+  search_movies,
+  person,
+  people,
+  search_people,
+  oscar_movies,
+  search_oscar_winner,
+  movie_people,
+  top20_movies,
+  movie_count,
+  oscar_ranking,
+  avg_vote_person,
+  // author,
+  // random,
+  // song,
+  // album_songs,
+  // top_songs,
+  // top_albums,
 }
