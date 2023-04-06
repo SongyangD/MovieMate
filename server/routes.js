@@ -116,6 +116,19 @@ const movies = async function(req, res) {
 // Route 2: GET /movies/:movie_id
 const movie = async function(req, res) {
   const movie_id = req.params.movie_id;
+  connection.query(`
+    SELECT *
+    FROM movie_data
+    WHERE imdb_title_id = '${movie_id}'
+    `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); // replace this with your implementation
+    } else {
+      res.json(data[0]);
+    }
+  });
+}
 
 //Homepage: recommend an oscar winning movie to the user
 const oscarMovieRecommended = async function (req,res){
@@ -168,7 +181,7 @@ const oscarMovieRecommended = async function (req,res){
 const  recent10genre = async function(req, res) {
   // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
   // Most of the code is already written for you, you just need to fill in the query
-  const genure = req.params.genure;
+  const genre = req.params.genre;
 
   var query = `
   SELECT title, poster_url, description
@@ -182,7 +195,7 @@ const  recent10genre = async function(req, res) {
       console.log(err);
       res.json({});
     } else {
-      res.json(data[0]);
+      res.json(data);
     }
   });
 }
@@ -190,12 +203,12 @@ const  recent10genre = async function(req, res) {
 const  top10language = async function(req, res) {
   // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
   // Most of the code is already written for you, you just need to fill in the query
-  const language = req.params.genure;
+  const language = req.params.language;
 
   var query = `
   SELECT title, poster_url, description
     FROM movie_data
-    WHERE genre Like '%${language}%'
+    WHERE language Like '%${language}%'
     Order by avg_vote DESC
     LIMIT 10
   `
@@ -204,7 +217,7 @@ const  top10language = async function(req, res) {
       console.log(err);
       res.json({});
     } else {
-      res.json(data[0]);
+      res.json(data);
     }
   });
 }
@@ -512,7 +525,7 @@ const movie_count = async function(req, res) {
       }
     });
    } 
-};
+}
 
 // Route 12: GET /avg_vote_person/:person_id
 //Average Vote (multiple tables): return the averge vote of the given actor's movies.

@@ -32,7 +32,7 @@ app.get('/avg_vote_person/:person_id', routes.avg_vote_person);
 // app.get('/random', routes.random);
 // app.get('/album/:album_id', routes.album);
 // app.get('/albums', routes.albums);
-app.get('/search_songs', routes.search_songs);
+// app.get('/search_songs', routes.search_songs);
 app.get('/oscar_recommend', routes.oscarMovieRecommended);
 app.get('/recent10genre/:genre', routes.recent10genre);
 app.get('/top10language/:language', routes.top10language);
