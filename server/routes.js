@@ -104,7 +104,7 @@ const oscarMovieRecommended = async function (req,res){
   md.description,
   md.year,
   md.duration,
-  p.name AS director_name
+  director_name
   LIMIT 1;  
   `
   connection.query(query, (err, data) => {
@@ -396,4 +396,7 @@ module.exports = {
   top_songs,
   top_albums,
   search_songs,
+  oscarMovieRecommended,
+  recent10genre,
+  top10language
 }
