@@ -19,6 +19,8 @@ app.get('/people', routes.people);
 app.get('/search_people', routes.search_people);
 app.get('/oscar_movies', routes.oscar_movies);
 app.get('/search_oscar_winner', routes.search_oscar_winner);
+app.get('/movie_people/:movie_id', routes.movie_people);
+app.get('/top20_movies', routes.top20_movies);
 // app.get('/album_songs/:album_id', routes.album_songs);
 // app.get('/top_songs', routes.top_songs);
 // app.get('/top_albums', routes.top_albums);
