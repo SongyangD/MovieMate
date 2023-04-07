@@ -24,6 +24,8 @@ app.get('/top20_movies', routes.top20_movies);
 app.get('/movie_count', routes.movie_count);
 app.get('/oscar_ranking', routes.oscar_ranking);
 app.get('/avg_vote_person/:person_id', routes.avg_vote_person);
+app.get('/top10_rated_oscar_movies', routes.top10_rated_oscar_movies);
+app.get('/related_actors/:name', routes.related_actors);
 
 // app.get('/album_songs/:album_id', routes.album_songs);
 // app.get('/top_songs', routes.top_songs);

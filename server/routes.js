@@ -1,5 +1,6 @@
 const mysql = require('mysql')
-const config = require('./config.json')
+const config = require('./config.json');
+const { query } = require('express');
 
 // Creates MySQL connection using database credential provided in config.json
 // Do not edit. If the connection fails, make sure to check that config.json is filled out correctly
@@ -340,6 +341,31 @@ const oscar_ranking = async function(req, res){
   });
 }
 
+
+// Route 4: GET /top10_rated_oscar_movies
+const top10_rated_oscar_movies = async function(req, res) {
+  // const page = parseInt(req.query.page) || 1;
+  // const pageSize = parseInt(req.query.page_size) || 20;
+  // const offset = (page - 1) * pageSize;
+ 
+  var query = `
+  SELECT  *
+  FROM movie_data
+  WHERE Oscar_nominated = True
+  Order by avg_vote DESC
+  limit 10;
+  `;
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); 
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+
 // Route 6: GET /album_songs/:album_id
 // const album_songs = async function(req, res) {
 //   // TODO (TASK 7): implement a route that given an album_id, returns all songs on that album ordered by track number (ascending)
@@ -459,6 +485,80 @@ const movie_people = async function (req, res) {
   });
 }
 
+//Rout:GET/related_actors/:name
+const related_actors = async function (req, res) {
+  const actor_name = req.params.name
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
+  var query = `WITH X_movies AS(
+    SELECT M.imdb_title_id,M.title
+    FROM movie_people MP JOIN movie_data M ON M.imdb_title_id = MP.imdb_title_id
+               JOIN people P ON MP.imdb_name_id = P.imdb_name_id
+    WHERE P.name= "Tom Hanks"
+    ),
+
+ coActors1 AS (
+    SELECT DISTINCT P.imdb_name_id AS id, P.name AS name
+    FROM movie_people MP JOIN X_movies XM on XM.imdb_title_id = MP.imdb_title_id
+                    JOIN people P ON P.imdb_name_id = MP.imdb_name_id
+    WHERE MP.imdb_name_id != "Tom Hanks"
+    ),
+
+co1movies AS(
+     SELECT DISTINCT MP.imdb_title_id
+     FROM movie_people MP JOIN coActors1 C1 ON C1.id = MP.imdb_name_id
+    ),
+
+coActors2 AS (
+    SELECT DISTINCT P.imdb_name_id AS id, P.name AS name
+    FROM movie_people MP JOIN co1movies C1 ON C1.imdb_title_id = MP.imdb_title_id
+                    JOIN people P ON P.imdb_name_id = MP.imdb_name_id
+    WHERE
+    P.imdb_name_id !="Tom Hanks"
+    AND
+    MP.imdb_name_id NOT IN (SELECT coActors1.id FROM  coActors1)
+    ),
+
+co2movies AS(
+     SELECT DISTINCT MP.imdb_title_id
+     FROM movie_people MP JOIN coActors2 C2 ON C2.id = MP.imdb_name_id
+    ),
+
+coActors3 AS (
+    SELECT DISTINCT MP.imdb_name_id AS id, MC.name AS name
+    FROM movie_people MP JOIN co2movies C2 ON C2.imdb_title_id = MP.imdb_title_id
+                    JOIN people MC ON MC.imdb_name_id = MP.imdb_name_id
+    WHERE
+        MC.imdb_name_id != "Tom Hanks"
+        AND
+        MC.imdb_name_id NOT IN (SELECT coActors2.id FROM coActors2)
+        AND
+        MC.imdb_name_id NOT IN (SELECT coActors1.id FROM  coActors1)
+
+    ),
+
+actoerTable1 AS(
+    SELECT name, id from coActors1
+    UNION
+    SELECT name, id from coActors2
+)
+SELECT name, id
+FROM actoerTable1
+UNION
+SELECT name, id from coActors3;
+`
+  connection.query(
+query, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({}); 
+      } else {
+        res.json(data);
+      }
+    });
+  }
+    
 
 // Route: GET /top_songs
 // const top_songs = async function(req, res) {
@@ -612,6 +712,9 @@ module.exports = {
   movie_count,
   oscar_ranking,
   avg_vote_person,
+  top10_rated_oscar_movies,
+  related_actors
+  
   // author,
   // random,
   // song,
