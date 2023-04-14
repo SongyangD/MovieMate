@@ -94,42 +94,42 @@ connection.connect((err) => err && console.log(err));
  *  MOVIES ROUTES *
  ********************************/
 // Route 1: GET /movies
-const movies = async function(req, res) {
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
-  var query = `
-    SELECT *
-    FROM movie_data
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
-  `;
-  connection.query(query, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({}); 
-    } else {
-      res.json(data);
-    }
-  });
-}
+// const movies = async function(req, res) {
+//   const page = parseInt(req.query.page) || 1;
+//   const pageSize = parseInt(req.query.page_size) || 20;
+//   const offset = (page - 1) * pageSize;
+//   var query = `
+//     SELECT *
+//     FROM movie_data
+//     ORDER BY year DESC
+//     LIMIT ${offset}, ${pageSize};
+//   `;
+//   connection.query(query, (err, data) => {
+//     if (err || data.length === 0) {
+//       console.log(err);
+//       res.json({}); 
+//     } else {
+//       res.json(data);
+//     }
+//   });
+// }
 
 // Route 2: GET /movies/:movie_id
-const movie = async function(req, res) {
-  const movie_id = req.params.movie_id;
-  connection.query(`
-    SELECT *
-    FROM movie_data
-    WHERE imdb_title_id = '${movie_id}'
-    `, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({}); // replace this with your implementation
-    } else {
-      res.json(data[0]);
-    }
-  });
-}
+// const movie = async function(req, res) {
+//   const movie_id = req.params.movie_id;
+//   connection.query(`
+//     SELECT *
+//     FROM movie_data
+//     WHERE imdb_title_id = '${movie_id}'
+//     `, (err, data) => {
+//     if (err || data.length === 0) {
+//       console.log(err);
+//       res.json({}); // replace this with your implementation
+//     } else {
+//       res.json(data[0]);
+//     }
+//   });
+// }
 
 //Homepage: recommend an oscar winning movie to the user
 const oscarMovieRecommended = async function (req,res){
@@ -673,28 +673,28 @@ const movie_people = async function (req, res) {
  * ADVANCED INFO ROUTES *
  ************************/
 // Route 10: GET /movie_people/:movie_id
-const movie_people = async (req, res) => {
-  const movie_id = req.params.movie_id;
-  const page = parseInt(req.params.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
-  var query = `
-  SELECT P.*
-  FROM movie_data M, movie_people MP, people P
-  WHERE M.imdb_title_id = MP.imdb_title_id 
-  AND MP.imdb_name_id = P.imdb_name_id 
-  AND M.imdb_title_id = '${movie_id}'
-  LIMIT ${offset}, ${pageSize};
-  `;
-  connection.query(query, (err, data) => {
-  if (err || data.length === 0) {
-    console.log(err);
-    res.json({}); 
-  } else {
-    res.json(data);
-  }
-});
-}
+// const movie_people = async (req, res) => {
+//   const movie_id = req.params.movie_id;
+//   const page = parseInt(req.params.page) || 1;
+//   const pageSize = parseInt(req.query.page_size) || 20;
+//   const offset = (page - 1) * pageSize;
+//   var query = `
+//   SELECT P.*
+//   FROM movie_data M, movie_people MP, people P
+//   WHERE M.imdb_title_id = MP.imdb_title_id 
+//   AND MP.imdb_name_id = P.imdb_name_id 
+//   AND M.imdb_title_id = '${movie_id}'
+//   LIMIT ${offset}, ${pageSize};
+//   `;
+//   connection.query(query, (err, data) => {
+//   if (err || data.length === 0) {
+//     console.log(err);
+//     res.json({}); 
+//   } else {
+//     res.json(data);
+//   }
+// });
+// }
 
 // Route 7: GET /top_songs
 
