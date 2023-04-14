@@ -8,7 +8,7 @@ const config = require('../config.json');
 
 export default function HomePage() {
   // We use the setState hook to persist information across renders (such as the result of our API calls)
-  const [songOfTheDay, setSongOfTheDay] = useState({});
+  const [oscarMovieOfTheDay, setOscarMovieOfTheDay] = useState({});
   // TODO (TASK 13): add a state variable to store the app author (default to '')
   const [appAuthor, setAppAuthor] = useState("");
   const [selectedSongId, setSelectedSongId] = useState(null);
@@ -24,7 +24,7 @@ export default function HomePage() {
     // and proceeds to convert the result to a JSON which is finally placed in state.
     fetch(`http://${config.server_host}:${config.server_port}/random`)
       .then(res => res.json())
-      .then(resJson => setSongOfTheDay(resJson));
+      .then(resJson => setOscarMovieOfTheDay(resJson));
     fetch(`http://${config.server_host}:${config.server_port}/author/name`)
       .then(res => res.text())
       .then(resText => setAppAuthor(resText));
@@ -68,19 +68,33 @@ export default function HomePage() {
       },
   ]
 
+
+  const getRecent10Genre = async (genre) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/recent10genre/${genre}`, {
+        method: 'GET',
+    })
+    return res.json()
+  }
+  const getTop10Language = async (language) => {
+      var res = await fetch(`http://${config.server_host}:${config.server_port}/top10language/${language}`, {
+          method: 'GET',
+      })
+      return res.json()
+  }
+
   return (
     <Container>
       {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
       {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
-      <h2>Check out your song of the day:&nbsp;
-        <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
+      <h2>Check out your Oscar Nominated Movie of the day:&nbsp;
+        <Link onClick={() => setSelectedSongId(oscarMovieOfTheDay.song_id)}>{oscarMovieOfTheDay.title}</Link>
       </h2>
       <Divider />
-      <h2>Top Songs</h2>
+      <h2>Recent 10 Movies</h2>
       <LazyTable route={`http://${config.server_host}:${config.server_port}/top_songs`} columns={songColumns} />
       <Divider />
       {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
-      <h2>Top Albums</h2>
+      <h2>Top 10 Movies</h2>
       <LazyTable route={ `http://${config.server_host}:${config.server_port}/top_albums`} columns={albumColumns} defaultPageSize={5} rowsPerPageOptions={[5, 10]} />
       
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
