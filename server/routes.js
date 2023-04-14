@@ -130,6 +130,121 @@ const movie = async function(req, res) {
   });
 }
 
+//Homepage: recommend an oscar winning movie to the user
+const oscarMovieRecommended = async function (req,res){
+
+  var query = `
+  WITH random_movie AS (
+    SELECT imdb_title_id
+    FROM oscar
+    WHERE winner = true
+    ORDER BY RAND()
+    LIMIT 1
+  )
+  SELECT
+    md.title,
+    md.poster_url,
+    md.description,
+    COUNT(o.imdb_title_id) AS num_nominations,
+    md.year,
+    md.duration,
+    p.name AS director_name
+  FROM movie_data AS md
+  JOIN oscar AS o
+  ON md.imdb_title_id = o.imdb_title_id
+  JOIN random_movie
+  ON md.imdb_title_id = random_movie.imdb_title_id
+  JOIN movie_people AS mp
+  ON md.imdb_title_id = mp.imdb_title_id
+    AND mp.category = 'director'
+  JOIN people AS p
+  ON mp.imdb_name_id = p.imdb_name_id
+  GROUP BY md.title,
+  md.poster_url,
+  md.description,
+  md.year,
+  md.duration,
+  director_name
+  LIMIT 1;  
+  `
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+
+const  recent10genre = async function(req, res) {
+  // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
+  // Most of the code is already written for you, you just need to fill in the query
+  const genre = req.params.genre;
+
+  var query = `
+  SELECT title, poster_url, description
+    FROM movie_data
+    WHERE genre Like '%${genre}%'
+    Order by year DESC, votes DESC
+    LIMIT 10
+  `
+  connection.query(query,(err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+const  top10language = async function(req, res) {
+  // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
+  // Most of the code is already written for you, you just need to fill in the query
+  const language = req.params.language;
+
+  var query = `
+  SELECT title, poster_url, description
+    FROM movie_data
+    WHERE language Like '%${language}%'
+    Order by avg_vote DESC
+    LIMIT 10
+  `
+  connection.query(query,(err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+/********************************
+ * BASIC SONG/ALBUM INFO ROUTES *
+ ********************************/
+
+// Route 3: GET /song/:song_id
+const song = async function(req, res) {
+  // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
+  // Most of the code is already written for you, you just need to fill in the query
+  const song_id = req.params.song_id;
+  connection.query(`
+    SELECT *
+    FROM movie_data
+    WHERE imdb_title_id = '${movie_id}'
+    `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({}); // replace this with your implementation
+    } else {
+      res.json(data[0]);
+    }
+  });
+}
+
 // Sydu
 // Route 3: GET /search_movies
 const search_movies = async function(req, res) {
@@ -410,7 +525,7 @@ const movie_count = async function(req, res) {
       }
     });
    } 
-};
+}
 
 // Route 12: GET /avg_vote_person/:person_id
 //Average Vote (multiple tables): return the averge vote of the given actor's movies.
@@ -618,4 +733,10 @@ module.exports = {
   // album_songs,
   // top_songs,
   // top_albums,
+  // album,
+  // albums,
+  // search_songs,
+  oscarMovieRecommended,
+  recent10genre,
+  top10language,
 }
