@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Box, Container } from '@mui/material';
+import { Box, Container, dividerClasses } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import Pagination from '../components/Pagination';
+import Typography from '@mui/material/Typography';
 
 const config = require('../config.json');
+
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState([]);
@@ -19,25 +22,68 @@ export default function MoviesPage() {
   // https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox
   const flexFormat = { display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly' };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const moviesPerPage = 30;
+  const totalMovies = movies.length;
+  const totalPages = Math.ceil(totalMovies / moviesPerPage);
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies = movies.slice(indexOfFirstMovie, indexOfLastMovie);
+
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
-    // TODO (TASK 22): replace the empty object {} in the Container attribute sx with flexFormat. Observe the change to the Albums page. Then uncomment the code to display the cover image and once again observe the change, i.e. what happens to the layout now that each album card has a fixed width?
-    <Container style={flexFormat}>
-      {movies.map((movie) =>
-        <Box
-          key={movie.imdb_title_id}
-          p={3}
-          m={2}
-          style={{ background: 'white', borderRadius: '16px', border: '2px solid #000' }}
-        >
-          {
-          <img
-            src={movie.poster_url}
-            alt={`${movie.title}`}
-          />
-          }
-          <h4><NavLink to={`/movies/${movie.imdb_title_id}`}>{movie.title}</NavLink></h4>
-        </Box>
-      )}
+    // <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', padding: '10px' }}>
+
+    // </Box>
+    <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px' }}>
+  
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+        {currentMovies.map(movie => (
+          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
+            <a href=" ">
+              < img src={movie.poster_url} alt={movie.title} style={{ width: '90%', height: 'auto' }} />
+            </a >
+            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
+              {movie.title}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+
+      <div className="movie-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '40px 0' }}>
+        <Pagination
+          count={totalPages}
+          currentPage={currentPage}
+          onChangePage={handleChangePage}
+          sx={{ '& .MuiPaginationItem-root': { fontSize: '1.8rem', padding: '8px' } }}
+        />
+      </div>
     </Container>
   );
 }
+  // return (
+  //   <Container style={{display: 'flex', flexWrap: 'wrap'}}>
+  //     {movies.map((movie) =>
+  //       <Box
+  //         key={movie.imdb_title_id}
+  //         p={3}
+  //         m={2}
+  //         // style={{ background: 'white', borderRadius: '16px', border: '2px solid #000' }}
+  //         style={{ background: 'white', borderRadius: '16px', border: '2px solid #000', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', maxWidth: '300px' }}
+  //       >
+  //         {
+  //           <img
+  //             src={movie.poster_url}
+  //             alt={`${movie.title}`}
+  //           />
+  //         }
+  //         <h4 style={{ fontSize: '16px', lineHeight: '20px', maxHeight: '40px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal' }}>
+  //           <NavLink to={`/movies/${movie.imdb_title_id}`}>{movie.title}</NavLink>
+  //         </h4>
+  //       </Box>
+  //     )}
+  //   </Container>
+  // );
