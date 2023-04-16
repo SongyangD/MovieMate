@@ -50,7 +50,7 @@ export default function MediaCard() {
       />
       <CardContent sx={styles.cardContent}>
         <Typography gutterBottom variant="h5" component="div">
-        <a href="https://example.com">{oscarMovieOfTheDay.title}</a>
+        <a href={`/movies/${oscarMovieOfTheDay.imdb_title_id}`}>{oscarMovieOfTheDay.title}</a>
         </Typography>
         <Typography variant="body2" color="text.primary" sx={{ fontSize: 16 }}>
           Release year: {oscarMovieOfTheDay.year}

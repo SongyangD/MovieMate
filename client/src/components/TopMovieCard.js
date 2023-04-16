@@ -13,7 +13,7 @@ const config = require('../config.json');
 
 export default function TopTabs(props) {
   const {tabList, fetchUrl, defaultTab,tabType} = props;
-  
+
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [results, setResults] = useState([]);
   const [dropdownAnchorEl, setDropdownAnchorEl] = useState(null);
@@ -98,10 +98,10 @@ export default function TopTabs(props) {
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
               {currentPageResults.map(movie => (
                 <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-                  <a href="https://example.com">
+                  <a href={`/movies/${movie.imdb_title_id}`}>
                     <img src={movie.poster_url} alt={movie.title} style={{ width: '100%', height: 'auto' }} />
                   </a>
-                  <Link href="https://example.com" underline="none">
+                  <Link href={`/movies/${movie.imdb_title_id}`} underline="none">
                     <Typography variant="body2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '14px' }}>
                       {movie.title}
                     </Typography>
