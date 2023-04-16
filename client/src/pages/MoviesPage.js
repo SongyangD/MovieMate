@@ -3,6 +3,7 @@ import { Box, Container, dividerClasses } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import Typography from '@mui/material/Typography';
+import Filter from '../components/Filter';
 
 const config = require('../config.json');
 
@@ -35,11 +36,8 @@ export default function MoviesPage() {
   };
 
   return (
-    // <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', padding: '10px' }}>
-
-    // </Box>
     <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px' }}>
-  
+      <Filter/>  
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
         {currentMovies.map(movie => (
           <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
@@ -52,7 +50,6 @@ export default function MoviesPage() {
           </Box>
         ))}
       </Box>
-
       <div className="movie-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '40px 0' }}>
         <Pagination
           count={totalPages}
