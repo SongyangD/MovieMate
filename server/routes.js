@@ -86,9 +86,9 @@ const search_movies = async function(req, res) {
   const language = req.query.language ?? '';
   const genre = req.query.genre ?? '';
   const isOscar = req.query.isOscar === 'true' ? 1 : 0;
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
+  // const page = parseInt(req.query.page) || 1;
+  // const pageSize = parseInt(req.query.page_size) || 20;
+  // const offset = (page - 1) * pageSize;
 
   var query1 = `
     SELECT *
@@ -99,20 +99,18 @@ const search_movies = async function(req, res) {
     AND genre LIKE '%${genre}%' 
     AND country LIKE '%${country}%' 
     AND language LIKE '%${language}%'
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
+    ORDER BY year DESC;
   `;
 
   var query2 = `
     SELECT *
     FROM movie_data
     WHERE title LIKE '%${title}%'
-    AND year BETWEEN ${yearLow} AND year <= ${yearHigh} 
+    AND year BETWEEN ${yearLow} AND ${yearHigh} 
     AND genre LIKE '%${genre}%' 
     AND country LIKE '%${country}%' 
     AND language LIKE '%${language}%'
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
+    ORDER BY year DESC;
   `;
   if (isOscar){
     connection.query(query1, (err, data) => {
