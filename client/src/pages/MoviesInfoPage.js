@@ -6,85 +6,82 @@ import SongCard from '../components/SongCard';
 import { formatDuration, formatReleaseDate } from '../helpers/formatter';
 const config = require('../config.json');
 
-export default function AlbumInfoPage() {
-  const { album_id } = useParams();
+export default function MovieInfoPage() {
+  // const { movie_id } = useParams();
+  const movie_id = 'tt0111161';
 
-  const [songData, setSongData] = useState([{}]); // default should actually just be [], but empty object element added to avoid error in template code
-  const [albumData, setAlbumData] = useState([]);
-
-  const [selectedSongId, setSelectedSongId] = useState(null);
+  // const [songData, setSongData] = useState([{}]); // default should actually just be [], but empty object element added to avoid error in template code
+  const [movieData, setMovieData] = useState([]);
+  const [moviePeople, setMoviePeople] = useState([{}]);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/album/${album_id}`)
+    fetch(`http://${config.server_host}:${config.server_port}/movies/${movie_id}`)
       .then(res => res.json())
-      .then(resJson => setAlbumData(resJson));
+      .then(resJson => {
+        console.log('Movie data:', resJson);
+        setMovieData(resJson);
+      });
 
-    fetch(`http://${config.server_host}:${config.server_port}/album_songs/${album_id}`)
+    fetch(`http://${config.server_host}:${config.server_port}/movie_people/${movie_id}`)
       .then(res => res.json())
-      .then(resJson => setSongData(resJson));
-  }, [album_id]);
+      .then(resJson => setMoviePeople(resJson));
+  }, [movie_id]);
 
   return (
     <Container>
-      {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
-      <Stack direction='row' justify='center'>
-        <img
-          key={albumData.album_id}
-          src={albumData.thumbnail_url}
-          alt={`${albumData.title} album art`}
-          style={{
-            marginTop: '40px',
-            marginRight: '40px',
-            marginBottom: '40px'
-          }}
-        />
-        <Stack>
-          <h1 style={{ fontSize: 64 }}>{albumData.title}</h1>
-          <h2>Released: {formatReleaseDate(albumData.release_date)}</h2>
+        {/* {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />} */}
+        <Stack direction='row' justify='center'>
+          <img
+            key={movieData.imdb_title_id}
+            src={movieData.poster_url}
+            alt={`${movieData.title} `}
+            style={{
+              marginTop: '40px',
+              marginRight: '40px',
+              marginBottom: '40px'
+            }} />
+          <Stack>
+            <h1 style={{ fontSize: 64 }}>{movieData.title}</h1>
+            <h2>Released: {formatReleaseDate(movieData.year)}</h2>
+          </Stack>
         </Stack>
-      </Stack>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell key='#'>#</TableCell>
-              <TableCell key='Title'>Title</TableCell>
-              <TableCell key='Plays'>Plays</TableCell>
-              <TableCell key='Duration'>Duration</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {
-              // TODO (TASK 23): render the table content by mapping the songData array to <TableRow> elements
-              // Hint: the skeleton code for the very first row is provided for you. Fill out the missing information and then use a map function to render the rest of the rows.
-              // Hint: it may be useful to refer back to LazyTable.js
-              // <TableRow key={songData[0].song_id}>
-              //   <TableCell key='#'>{songData[0].number}</TableCell>
-              //   <TableCell key='Title'>
-              //     <Link onClick={() => setSelectedSongId(songData[0].song_id)}>
-              //       Replace me
-              //     </Link>
-              //   </TableCell>
-              //   <TableCell key='Plays'>Replace me</TableCell>
-              //   <TableCell key='Duration'>Replace me (use the formatDuration helper function, see SongCard.js for an example)</TableCell>
-              // </TableRow>
-              songData.map((song, index) => (
-                <TableRow key={song.song_id}>
-                  <TableCell key='#'>{index + 1}</TableCell>
-                  <TableCell key='Title'>
-                    <Link onClick={() => setSelectedSongId(song.song_id)}>
-                      {song.title}
-                    </Link>
-                  </TableCell>
-                  <TableCell key='Plays'>{song.plays}</TableCell>
-                  <TableCell key='Duration'>{formatDuration(song.duration)}</TableCell>
-                </TableRow>
-              ))
-            }
-            
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Container>
+      </Container>
   );
 }
+  // return (
+  //   <Container>
+  //     <div style={{ margin: '2%' }}>
+  //       <Card sx={styles.cardContainer}>
+  //         <CardMedia
+  //           component="img"
+  //           sx={styles.cardMedia}
+  //           image={movieData.poster_url}
+  //         />
+  //         <CardContent sx={styles.cardContent}>
+  //           <Typography gutterBottom variant="h5" component="div">
+  //             <a href={`/movies/${movieData.imdb_title_id}`}>{movieData.title}</a>
+  //           </Typography>
+  //           <Typography variant="body2" color="text.primary" sx={{ fontSize: 16 }}>
+  //             Release year: {movieData.year}
+  //           </Typography>
+  //           <Typography variant="body2" color="text.primary" sx={{ fontSize: 16 }}>
+  //             Duration: {movieData.duration} minutes
+  //           </Typography>
+  //           <Typography variant="body2" color="text.primary" sx={{ fontSize: 16 }}>
+  //             Director: {movieData.director_name}
+  //           </Typography>
+  //           <Typography variant="body2" color="text.primary" sx={{ fontSize: 16 }}>
+  //             Oscar Nominations: {movieData.num_nominations}
+  //           </Typography>
+  //           <Typography variant="body2" color="text.secondary" style={{ marginTop: '16px' }}>
+  //             {movieData.description}
+  //           </Typography>
+  //         </CardContent>
+  //         {/* <CardActions>
+  //       <Button size="small">Share</Button>
+  //       <Button size="small">Learn More</Button>
+  //     </CardActions> */}
+  //       </Card>
+  //     </div>
+  //   </Container>
+  // );

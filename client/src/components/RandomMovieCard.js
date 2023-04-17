@@ -14,6 +14,7 @@ const styles = {
     alignItems: 'center',
     width: '100%', 
     margin: '0 auto',
+    // border: '1px solid #3f51b5',
   },
   cardMedia: {
     width: 300, // set a fixed width
@@ -43,13 +44,16 @@ export default function MediaCard() {
   return (
     <div style={{margin: '2%'}}>
     <Card sx={styles.cardContainer}> 
-      <CardMedia
-        component="img"
-        sx={styles.cardMedia}
-        image={oscarMovieOfTheDay.poster_url}
-      />
+      <a href={`/movies/${oscarMovieOfTheDay.imdb_title_id}`}>
+        <CardMedia
+          component="img"
+          sx={styles.cardMedia}
+          image={oscarMovieOfTheDay.poster_url}
+        />
+      </a>
       <CardContent sx={styles.cardContent}>
-        <Typography gutterBottom variant="h5" component="div">
+
+        <Typography gutterBottom variant="h5" component="div" style={{ marginTop: '32px' }}>
         <a href={`/movies/${oscarMovieOfTheDay.imdb_title_id}`}>{oscarMovieOfTheDay.title}</a>
         </Typography>
         <Typography variant="body2" color="text.primary" sx={{ fontSize: 16 }}>

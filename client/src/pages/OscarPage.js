@@ -5,7 +5,10 @@ import { DataGrid } from '@mui/x-data-grid';
 import SongCard from '../components/SongCard';
 import { formatDuration } from '../helpers/formatter';
 import ImageSliders from '../components/ImageSlider';
+import OscarBarChart from '../components/oscarData';
+import MyChart from '../components/OscarCard'
 const config = require('../config.json');
+
 
 export default function OscarPage() {
   const [pageSize, setPageSize] = useState(10);
@@ -168,6 +171,9 @@ export default function OscarPage() {
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
       />
+{/* 
+      <MyChart></MyChart> */}
+      
 
     </Container>
 

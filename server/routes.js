@@ -45,11 +45,13 @@ const movies = async function(req, res) {
   const pageSize = parseInt(req.query.page_size) || 20;
   const offset = (page - 1) * pageSize;
   var query = `
-    SELECT *
+    SELECT title, imdb_title_id,poster_url,avg_vote
     FROM movie_data
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
+    ORDER BY avg_vote DESC, year DESC;
+
+    ;
   `;
+      // LIMIT ${offset}, ${pageSize}
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -86,36 +88,23 @@ const search_movies = async function(req, res) {
   const country = req.query.country ?? '';
   const language = req.query.language ?? '';
   const genre = req.query.genre ?? '';
-  const isOscar = req.query.isOscar === 'true' ? 1 : 0;
+  const isOscar = req.query.isOscar === 'true' ? 1 : (req.query.isOscar === 'false' ? null : (req.query.isOscar ? null : undefined));
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.page_size) || 20;
   const offset = (page - 1) * pageSize;
 
   var query1 = `
-    SELECT *
+    SELECT title, imdb_title_id,poster_url,avg_vote
     FROM movie_data
-    WHERE title LIKE '%${title}%'
-    AND Oscar_nominated = ${isOscar} 
+    WHERE (title LIKE '%${title}%' OR title IS NULL)
+    AND (${isOscar} IS NULL OR Oscar_nominated = ${isOscar})
     AND year BETWEEN ${yearLow} AND ${yearHigh} 
-    AND genre LIKE '%${genre}%' 
-    AND country LIKE '%${country}%' 
-    AND language LIKE '%${language}%'
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
+    AND (genre IS NULL OR genre LIKE '%${genre}%')
+    AND (country IS NULL OR country LIKE '%${country}%')
+    AND (language IS NULL OR language LIKE '%${language}%')
+    ORDER BY avg_vote DESC, year DESC;
   `;
 
-  var query2 = `
-    SELECT *
-    FROM movie_data
-    WHERE title LIKE '%${title}%'
-    AND year BETWEEN ${yearLow} AND year <= ${yearHigh} 
-    AND genre LIKE '%${genre}%' 
-    AND country LIKE '%${country}%' 
-    AND language LIKE '%${language}%'
-    ORDER BY year DESC
-    LIMIT ${offset}, ${pageSize};
-  `;
-  if (isOscar){
     connection.query(query1, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -124,16 +113,6 @@ const search_movies = async function(req, res) {
         res.json(data);
       }
     });
-  }else{
-    connection.query(query2, (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json({});
-      } else {
-        res.json(data);
-      }
-    });
-  }
 }
 
 // Route 4: GET /movie_people/:movie_id
@@ -371,14 +350,12 @@ const related_actors = async function (req, res) {
     WHERE P.imdb_name_id = '${person_id}'
     ),
  
- 
  coActors1 AS (
     SELECT DISTINCT P.imdb_name_id AS id, P.name AS name, P.photo_url
     FROM movie_people MP JOIN X_movies XM on XM.imdb_title_id = MP.imdb_title_id
                     JOIN people P ON P.imdb_name_id = MP.imdb_name_id
     WHERE MP.imdb_name_id != '${person_id}'
     ),
- 
  
  co1movies AS(
      SELECT DISTINCT MP.imdb_title_id
@@ -459,7 +436,6 @@ const top10_rated_oscar_movies = async function(req, res) {
   });
  };
  
-
 /************************
  * OSCAR ROUTES *
  ************************/
@@ -478,7 +454,6 @@ const search_oscar_people = async function(req, res) {
     ORDER BY P.name ASC
     LIMIT ${offset}, ${pageSize};
   `;
-
   connection.query(query1, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -512,8 +487,6 @@ const search_oscar_filter = async function(req, res) {
       Order By M.title;
          
   `;
-
-
   var query_no_title =`
       SELECT *
       FROM oscar O, movie_data M
@@ -522,8 +495,6 @@ const search_oscar_filter = async function(req, res) {
             AND O.imdb_title_id = M.imdb_title_id
       Order by M.title;
 `;
-
-
   // if title empty
   if(title === ''){
     connection.query(query_no_title, function(err, data){
@@ -572,7 +543,7 @@ const search_won= async function(req, res) {
   SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category,O.winner,O.name
   FROM movie_data M
   JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
-  WHERE (O.year_ceremony = ${year} OR ${year} IS NULL)
+  WHERE (${year} IS NULL OR O.year_ceremony = ${year})
   order by O.year_ceremony, O.category;  
   `;
   //
@@ -636,29 +607,39 @@ const oscar_decade = async function(req, res) {
   const offset = (page - 1) * pageSize;
 
   var query = `
-  with table_x as (SELECT p.name, COUNT(*) AS num_nominations, CONCAT((m.year DIV 10) * 10, '-', (m.year DIV 10) * 10 + 9) AS decade
-  FROM people p
-  INNER JOIN movie_people mp ON p.imdb_name_id = mp.imdb_name_id
-  INNER JOIN movie_data m ON mp.imdb_title_id = m.imdb_title_id
-  INNER JOIN oscar o ON m.imdb_title_id = o.imdb_title_id
-  WHERE mp.category = 'actor' AND m.Oscar_nominated = TRUE
-  GROUP BY p.imdb_name_id, decade
-  HAVING COUNT(*) = (
-      SELECT COUNT(*)
-      FROM people p2
-      INNER JOIN movie_people mp2 ON p2.imdb_name_id = mp2.imdb_name_id
-      INNER JOIN movie_data m2 ON mp2.imdb_title_id = m2.imdb_title_id
-      INNER JOIN oscar o2 ON m2.imdb_title_id = o2.imdb_title_id
-      WHERE p.imdb_name_id = p2.imdb_name_id AND m2.Oscar_nominated = TRUE AND CONCAT((m2.year DIV 10) * 10, '-', (m2.year DIV 10) * 10 + 9) = decade
+  WITH oscar_movies AS (
+    SELECT DISTINCT imdb_title_id, year_ceremony
+    FROM oscar
+  ), 
+  oscar_movies_with_rating AS (
+    SELECT o.imdb_title_id, o.year_ceremony, m.avg_vote
+    FROM movie_data m
+    INNER JOIN oscar_movies o 
+    ON o.imdb_title_id = m.imdb_title_id
+  ),
+  actor_nominations AS (
+    SELECT mp.imdb_name_id, 
+           CONCAT((om.year_ceremony DIV 10) * 10, '-', (om.year_ceremony DIV 10) * 10 + 9) AS decade, 
+           COUNT(*) AS num_nominations,
+           AVG(om.avg_vote) as avg_rating
+    FROM movie_people mp
+    INNER JOIN oscar_movies_with_rating om 
+    ON mp.imdb_title_id = om.imdb_title_id
+    WHERE mp.category = 'actor'
+    GROUP BY mp.imdb_name_id, decade
+  ),
+  actor_nominations_max AS (
+    SELECT MAX(num_nominations) AS max_nominations, decade
+    FROM actor_nominations
+    GROUP BY decade
   )
-  ORDER BY decade ASC)
-  select name, max(num_nominations) num_nominations, decade
-  from table_x
-  group by decade
-  LIMIT ${offset}, ${pageSize};
+  SELECT p.name, an.max_nominations as num_nominations, an.decade, ROUND(a.avg_rating, 2) as avg_rating,a.imdb_name_id
+  FROM actor_nominations_max an
+  INNER JOIN actor_nominations a ON a.decade = an.decade AND a.num_nominations = an.max_nominations
+  INNER JOIN people p on a.imdb_name_id = p.imdb_name_id;
+  
   `;
-
-
+//  LIMIT ${offset}, ${pageSize}
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);

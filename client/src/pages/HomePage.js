@@ -1,23 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Container, Divider, Box} from '@mui/material';
 // import { NavLink } from 'react-router-dom';
-
-// import LazyTable from '../components/LazyTable';
-import SongCard from '../components/SongCard';
 import MediaCard from '../components/RandomMovieCard';
-import GenreTabs from '../components/GenreCard'
 import TopTabs from '../components/TopMovieCard'
-import LanguageTabs from '../components/LanguageCard'
+
 const config = require('../config.json');
-
-
-
 
 export default function HomePage() {
 
   const [appAuthor, setAppAuthor] = useState("");
-  const [selectedMovieId, setSelectedMovieId] = useState(null);
-
 
   useEffect(() => {
 
