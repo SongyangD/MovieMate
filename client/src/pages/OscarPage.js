@@ -7,42 +7,39 @@ import { formatDuration } from '../helpers/formatter';
 import ImageSliders from '../components/ImageSlider';
 const config = require('../config.json');
 
-export default function SongsPage() {
+export default function OscarPage() {
   const [pageSize, setPageSize] = useState(10);
   const [data, setData] = useState([]);
   const [selectedSongId, setSelectedSongId] = useState(null);
 
-  const [title, setTitle] = useState('');
-  const [duration, setDuration] = useState([60, 660]);
-  const [plays, setPlays] = useState([0, 1100000000]);
-  const [danceability, setDanceability] = useState([0, 1]);
-  const [energy, setEnergy] = useState([0, 1]);
-  const [valence, setValence] = useState([0, 1]);
-  const [explicit, setExplicit] = useState(false);
+  const [country, setCountry] = useState('');
+  const [year, setYear] = useState('');
+  const [language, setLanguage] = useState('');
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_songs`)
+    fetch(`http://${config.server_host}:${config.server_port}/search_won`)
       .then(res => res.json())
       .then(resJson => {
-        const songsWithId = resJson.map((song) => ({ id: song.song_id, ...song }));
+        const songsWithId = resJson.map((queryRes) => ({ id: queryRes.imdb_title_id, ...queryRes }));
         setData(songsWithId);
       });
   }, []);
 
-  const search = () => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_songs?title=${title}` +
-      `&duration_low=${duration[0]}&duration_high=${duration[1]}` +
-      `&plays_low=${plays[0]}&plays_high=${plays[1]}` +
-      `&danceability_low=${danceability[0]}&danceability_high=${danceability[1]}` +
-      `&energy_low=${energy[0]}&energy_high=${energy[1]}` +
-      `&valence_low=${valence[0]}&valence_high=${valence[1]}` +
-      `&explicit=${explicit}`
-    )
+  // const search = () => {
+  //   fetch(`http://${config.server_host}:${config.server_port}/search_oscar_filter?title=${title}` +
+  //     `&language=${language}` +
+  //     `&duration_low=${duration[0]}&duration_high=${duration[1]}}`
+  //   )
+
+    const search = () => {
+      fetch(`http://${config.server_host}:${config.server_port}/search_won?year=${year}` )
+      // `&language=${language}` +
+      // `&country=${country}`)
       .then(res => res.json())
       .then(resJson => {
         // DataGrid expects an array of objects with a unique id.
         // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
-        const songsWithId = resJson.map((song) => ({ id: song.song_id, ...song }));
+        const songsWithId = resJson.map((queryRes) => ({ id: queryRes.imdb_title_id, ...queryRes }));
         setData(songsWithId);
       });
   }
@@ -51,24 +48,35 @@ export default function SongsPage() {
   // The format of the columns array and the DataGrid component itself is very similar to our
   // LazyTable component. The big difference is we provide all data to the DataGrid component
   // instead of loading only the data we need (which is necessary in order to be able to sort by column)
+  // M.title, M.year, M.country, M.language, O.category, O.winner
   const columns = [
-    { field: 'title', headerName: 'Title', width: 300, renderCell: (params) => (
-        <Link onClick={() => setSelectedSongId(params.row.song_id)}>{params.value}</Link>
-    ) },
-    { field: 'duration', headerName: 'Duration' },
-    { field: 'plays', headerName: 'Plays' },
-    { field: 'danceability', headerName: 'Danceability' },
-    { field: 'energy', headerName: 'Energy' },
-    { field: 'valence', headerName: 'Valence' },
-    { field: 'tempo', headerName: 'Tempo' },
-    { field: 'key_mode', headerName: 'Key' },
-    { field: 'explicit', headerName: 'Explicit' },
+    { field: 'title', headerName: 'Title', width: 200},
+  //   renderCell: (params) => (
+  //      <Link onClick={() => setSelectedSongId(params.row.song_id)}>{params.value}</Link>
+  // ) 
+    { field: 'year', headerName: 'Year' },
+    { field: 'country', headerName: 'Country' },
+   // {field: 'category', headerName: 'Category'},
+    { field: 'avg_vote', headerName: 'Rating' },
+    {field: 'genre', headerName:'Genre', width:200},
+    // error + mucial _  music o
+//     at Query._handleFinalResultPacket (C:\Users\12674\Documents\GitHub\Team168_Project\server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+//     at Query.EofPacket (C:\Users\12674\Documents\GitHub\Team168_Project\server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)       
+//     at Protocol._parsePacket (C:\Users\12674\Documents\GitHub\Team168_Project\server\node_modules\mysql\lib\protocol\Protocol.js:291:23)       
+
+// Node.js v18.15.0
+//     at Sequence.end (C:\Users\12674\Documents\GitHub\Team168_Project\server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)       
+//     at Query._handleFinalResultPacket (C:\Users\12674\Documents\GitHub\Team168_Project\server\node_modules\mysql\lib\protocol\sequenc
+//    {field: 'category', headerName: 'Category'}
   ]
 
   const slides =[
     {url: "https://images.alphacoders.com/122/1220430.jpg", title:"snoopy"},
     {url: "https://images4.alphacoders.com/854/854483.png", title:"gumball"},
     {url: "https://wallpapercave.com/wp/wp2022676.jpg", title:"snowball"},
+    {url: "https://post.healthline.com/wp-content/uploads/2021/11/lotus-flower-in-pond-732x549-thumbnail-732x549.jpg", title:"flower"},
+    {url: "https://www.adobe.com/content/dam/cc/us/en/creativecloud/illustration-adobe-illustration/how-to-draw-trees/draw-trees_fb-img_1200x800.jpg", title:"flower"},
+  {url:"https://empire-s3-production.bobvila.com/slides/14230/original/eastern_redbud.jpg?1599778725", title:"ga"}
   ]
   // This component makes uses of the Grid component from MUI (https://mui.com/material-ui/react-grid/).
   // The Grid component is super simple way to create a page layout. Simply make a <Grid container> tag
@@ -78,7 +86,7 @@ export default function SongsPage() {
   // two grid items of the same size on the same row, define two grid items with xs={6}. The Grid container
   // will automatically lay out all the grid items into rows based on their xs values.
   const containerStyles={
-    width: '500px',
+    width: '1000px',
     height: '280px',
     margin: '0 auto',
   };
@@ -95,25 +103,29 @@ export default function SongsPage() {
       <div>
         <h1>Hello slider</h1>
         <div style={containerStyles}>
-        <ImageSliders slides={slides} imageStyles={imageStyles}/>
+        <ImageSliders slides={slides} parentWidth={500}/>
         </div>
       </div>
-
 
 
       {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
       <h2>Search Movie</h2>
       <Grid container spacing={6}>
-        <Grid item xs={8}>
-          <TextField label='Title' value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: "100%" }}/>
-        </Grid>
         <Grid item xs={4}>
-          <FormControlLabel
-            label='Explicit'
-            control={<Checkbox checked={explicit} onChange={(e) => setExplicit(e.target.checked)} />}
-          />
+          <TextField label='Year' value={year} onChange={(e) => setYear(e.target.value)} style={{ width: "100%" }}/>
         </Grid>
-        <Grid item xs={6}>
+
+        <Grid item xs={4}>
+          <TextField label='Country' value={country} onChange={(e) => setCountry(e.target.value)} style={{ width: "100%" }}/>
+        </Grid>
+
+        {/* <Grid item xs={4}>
+          <TextField label='Language' value={language} onChange={(e) => setLanguage(e.target.value)} style={{ width: "100%" }}/>
+        </Grid> */}
+        {/* <Grid item xs={4}>
+          <TextField label='Language' value={language} onChange={(e) => setLanguage(e.target.value)} style={{ width: "100%" }}/>
+        </Grid> */}
+        {/* <Grid item xs={12}>
           <p>Duration</p>
           <Slider
             value={duration}
@@ -124,59 +136,9 @@ export default function SongsPage() {
             valueLabelDisplay='auto'
             valueLabelFormat={value => <div>{formatDuration(value)}</div>}
           />
-        </Grid>
-        <Grid item xs={6}>
-          <p>Plays (millions)</p>
-          <Slider
-            value={plays}
-            min={0}
-            max={1100000000}
-            step={10000000}
-            onChange={(e, newValue) => setPlays(newValue)}
-            valueLabelDisplay='auto'
-            valueLabelFormat={value => <div>{value / 1000000}</div>}
-          />
-        </Grid>
-        {/* TODO (TASK 24): add sliders for danceability, energy, and valence (they should be all in the same row of the Grid) */}
-        {/* Hint: consider what value xs should be to make them fit on the same row. Set max, min, and a reasonable step. Is valueLabelFormat is necessary? */}
-        <Grid item xs={4}>
-          <p>Danceability</p>
-          <Slider
-            value={danceability}
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={(e, newValue) => setDanceability(newValue)}
-            valueLabelDisplay='auto'
-            valueLabelFormat={value => <div>{value}</div>}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <p>Energy</p>
-          <Slider
-            value={energy}
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={(e, newValue) => setEnergy(newValue)}
-            valueLabelDisplay='auto'
-            valueLabelFormat={value => <div>{value}</div>}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <p>Valence</p>
-          <Slider
-            value={valence}
-            min={0}
-            max={1}
-            step={0.01}
-            onChange={(e, newValue) => setValence(newValue)}
-            valueLabelDisplay='auto'
-            valueLabelFormat={value => <div>{value}</div>}
-          />
-        </Grid>
+        </Grid> */}
       </Grid>
-      <Button onClick={() => search() } style={{ left: '50%', transform: 'translateX(-50%)' }}>
+      <Button onClick={() => search()} style={{ left: '50%', transform: 'translateX(-50%)' }}>
         Search
       </Button>
       <h2>Results</h2>
@@ -189,6 +151,10 @@ export default function SongsPage() {
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
       />
+
     </Container>
+
+
+
   );
 }

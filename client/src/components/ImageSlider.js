@@ -1,5 +1,8 @@
-import {useState} from "react";
-const ImageSliders = ({slides}) => {
+import {useState, useEffect, useCallback, useRef} from "react";
+const ImageSliders = ({slides, parentWidth}) => {
+
+    const timerRef = useRef(null);
+    
     const[currentIndex, setCurrentIndex] = useState(0);
     const sliderStyles = {
         height: "100%",
@@ -43,11 +46,10 @@ const ImageSliders = ({slides}) => {
         setCurrentIndex(newIndex);
     };
 
-    const goToNext = () => {
+    const goToNext = useCallback( () => {
         const isLastSlide = currentIndex === slides.length - 1;
         const newIndex = isLastSlide ? 0 : currentIndex + 1;
-        setCurrentIndex(newIndex);
-    }
+        setCurrentIndex(newIndex);}, [currentIndex, slides])
 
     const dotsContainerStyles ={
         display: "flex",
@@ -55,31 +57,80 @@ const ImageSliders = ({slides}) => {
 
     };
 
+    const slidesContainerStyles={
+        display: 'flex',
+        height:'100%',
+        transition: "transform ease-out 0.3s",
+    }
+
     const dotStyles = {
         margin: "0 3px",
         cursor: "pointer",
         fontSize: "20px",
     };
 
+    const slidesContainerOverflowStyles = {
+        overflow: "hidden",
+        height: "100%",
+      };
+
     const goToSlide = (slideIndex) =>{
         setCurrentIndex(slideIndex)
     };
+
+    const getSlideStylesWithBackground = (slideIndex) => ({
+        ...slideStyles,
+        backgroundImage: `url(${slides[slideIndex].url})`,
+        width: `${parentWidth}px`,
+      });
+      const getSlidesContainerStylesWithWidth = () => ({
+        ...slidesContainerStyles,
+        width: parentWidth * slides.length,
+        transform: `translateX(${-(currentIndex * parentWidth)}px)`,
+      });
+
+    useEffect(()=> {
+        console.log("use effect");
+        timerRef.current = setTimeout(()=> {
+            goToNext();
+        }, 2000);
+        return () => clearTimeout(timerRef.current);
+    }, [goToNext]);
    
 
     return (
         <div style={sliderStyles}>
-            <div style={leftArrowStyles} onClick={goToPrevious}>←</div>
-            <div style={rightArrowStyles}onClick={goToNext}>→</div>
-            <div 
-                style = {slideStyles}></div>
-            <div style={dotsContainerStyles}>
-                {slides.map((slides, slideIndex)=>(
-                    <div key={slideIndex} style={dotStyles} onClick={()=>goToSlide(slideIndex)}>●</div>
-                ) )}
+          <div>
+            <div onClick={goToPrevious} style={leftArrowStyles}>
+              ❰
             </div>
-
+            <div onClick={goToNext} style={rightArrowStyles}>
+              ❱
+            </div>
+          </div>
+          <div style={slidesContainerOverflowStyles}>
+            <div style={getSlidesContainerStylesWithWidth()}>
+              {slides.map((_, slideIndex) => (
+                <div
+                  key={slideIndex}
+                  style={getSlideStylesWithBackground(slideIndex)}
+                ></div>
+              ))}
+            </div>
+          </div>
+          <div style={dotsContainerStyles}>
+            {slides.map((slide, slideIndex) => (
+              <div
+                style={dotStyles}
+                key={slideIndex}
+                onClick={() => goToSlide(slideIndex)}
+              >
+                ●
+              </div>
+            ))}
+          </div>
         </div>
-    )
-};
+      );
+    };
 
 export default ImageSliders;
