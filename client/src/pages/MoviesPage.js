@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import { Box, TextField, Checkbox, Container, MenuItem, Button, Slider, FormControlLabel, Typography } from '@mui/material';
+import Rating from '@mui/material/Rating';
+import Grid from '@mui/material/Grid';
+import defaultImage from '../images/i6.jpg';
 
 const config = require('../config.json');
 const genres = ['All genres', 'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Reality-TV', 'Romance', 'Sci-Fi', 'Sport', 'Thriller', 'War', 'Western'];
@@ -92,7 +95,6 @@ const countries = [
   'Australia',
   'Austria',
   'Belgium',
-  'Bosnia and Herzegovina',
   'Brazil',
   'Bulgaria',
   'Canada',
@@ -107,7 +109,6 @@ const countries = [
   'East Germany',
   'Egypt',
   'Estonia',
-  'Federal Republic of Yugoslavia',
   'Finland',
   'France',
   'Georgia',
@@ -137,7 +138,6 @@ const countries = [
   'Poland',
   'Portugal',
   'Qatar',
-  'Republic of North Macedonia',
   'Romania',
   'Russia',
   'Senegal',
@@ -168,6 +168,7 @@ const countries = [
 export default function MoviesPage() {
   const [movies, setMovies] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [moviesLoaded, setMoviesLoaded] = useState(false);
 
   const [title, setTitle] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
@@ -186,7 +187,10 @@ export default function MoviesPage() {
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/movies`)
       .then(res => res.json())
-      .then(resJson => setMovies(resJson));
+      .then(resJson => {
+        setMovies(resJson);
+        setMoviesLoaded(true);
+      });
   }, []);
 
   const search = () => {
@@ -204,8 +208,6 @@ export default function MoviesPage() {
   const handleChangePage = (page) => {
     setCurrentPage(page);
   };
-
-  // console.log("The value of currentMovies is", currentMovies);
 
   return (
     <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', display: "flex", flexDirection: "column" }}>
@@ -306,57 +308,35 @@ export default function MoviesPage() {
           Search
         </Button>
       </Box>
-      {currentMovies && currentMovies.length > 0 ? (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
+      {moviesLoaded && currentMovies && currentMovies.length > 0 ? (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
           {currentMovies.map(movie => (
             <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
               <NavLink to={`/movies/${movie.imdb_title_id}`}>
-                <img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
+                <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
               </NavLink>
-              <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-                {movie.title}
-              </Typography>
+              <Grid container spacing={1}>
+                <Grid item xs={12}>
+                  <Typography variant="body1" sx={{ fontSize: '14px', marginBottom: '0px' }}>
+                    {movie.title}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                    <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
+                    <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
+                      {`${(movie.avg_vote / 2).toFixed(1)}`}
+                    </Typography>
+                  </div>
+                </Grid>
+              </Grid>
             </Box>
           ))}
         </Box>
       ) : (
-        <Box sx={{ fontSize: 24 }}>No movies found</Box>
+        !moviesLoaded ? <Box sx={{ fontSize: 24 }}>Loading movies...</Box> :
+          <Box sx={{ fontSize: 24 }}>No movies found</Box>
       )}
-
-      {/* <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
-        {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <a href=" ">
-              <img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </a>
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))}
-      </Box> */}
-      {/* {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <a href=" ">
-              <img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </a>
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))} */}
-      {/* <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
-        {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <a href=" ">
-              <img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </a>
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))}
-      </Box> */}
       <div className="movie-page"
         style={{
           display: 'flex',
