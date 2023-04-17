@@ -230,7 +230,7 @@ const recent10genre = async function(req, res) {
     AND poster_url IS NOT NULL
     AND description IS NOT NULL
     Order by year DESC, votes DESC
-    LIMIT 30
+    LIMIT 50
   `
   connection.query(query,(err, data) => {
     if (err || data.length === 0) {
@@ -256,7 +256,7 @@ const top10language = async function(req, res) {
     AND poster_url IS NOT NULL
     AND description IS NOT NULL
     Order by avg_vote DESC
-    LIMIT 30
+    LIMIT 50
   `
   connection.query(query,(err, data) => {
     if (err || data.length === 0) {
@@ -558,28 +558,50 @@ const search_won= async function(req, res) {
   // const page = parseInt(req.query.page) || 1;
   // const pageSize = parseInt(req.query.page_size) || 20;
   // const offset = (page - 1) * pageSize;
-  const duration= req.query.duration_low ?? 60;
-  const language= req.query.language ?? '';
-
-  var query = `
-  SELECT *
+  // const duration= req.query.duration_low ?? 60;
+  const year= req.query.year ?? -1;
+  
+  var query_no_year = `
+  SELECT DISTINCT M.imdb_title_id, M.title, M.country, M.year, M.genre, M.avg_vote, O.category, O.winner,O.name
   FROM movie_data M
-  WHERE M.duration > ${duration} 
-  AND M.language LIKE '%${language}%' 
-  and M.imdb_title_id 
-  IN 
-  (SELECT O.imdb_title_id
-  FROM oscar O
-  WHERE O.winner = true);
+  JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
+  order by M.year, O.category;
   `;
-  connection.query(query, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({});
-    } else {
-      res.json(data);
-    }
-  });
+ // WHERE O.winner = 1
+  var query = `
+  SELECT DISTINCT M.imdb_title_id, M.title, M.country, M.year, M.genre, M.avg_vote, O.category,O.winner,O.name
+  FROM movie_data M
+  JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
+  WHERE (M.year = ${year} OR ${year} IS NULL)
+  order by M.year, O.category;  
+  `;
+  //
+    // AND O.winner = 1
+    if(year === -1){
+    connection.query(query_no_year, function(err, data){
+      if(err){
+        console.log(err);
+        res.json({});
+      } else if(data.length == 0){ // no match
+        res.json([]);
+      } else{
+        // console.log(data);
+        res.json(data);
+      }
+    })
+  } else { // if title
+    connection.query(query, function(err, data){
+      if(err){
+        console.log(err);
+        res.json({});
+      }else if(data.length == 0){ // no match
+        res.json([]);
+      }else{
+        // console.log(data);
+        res.json(data);
+      }
+    })
+  }
 }
 
 // Route 17: GET /top_oscar_director
