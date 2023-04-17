@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Pagination from '../components/Pagination';
-import { useLocation } from 'react-router-dom';
 import { Box, TextField, Checkbox, Container, MenuItem, Button, Slider, FormControlLabel, Typography } from '@mui/material';
 
 const config = require('../config.json');
@@ -25,6 +24,7 @@ const languages = [
   'Dari',
   'Danish',
   'Dutch',
+  'English',
   'Estonian',
   'Finnish',
   'Filipino',
@@ -178,11 +178,10 @@ export default function MoviesPage() {
 
   const moviesPerPage = 30;
   const totalMovies = movies.length;
-  const totalPages = Math.ceil(totalMovies / moviesPerPage);
+  const totalPages = totalMovies > 0 ? Math.ceil(totalMovies / moviesPerPage) : 0;
   const indexOfLastMovie = currentPage * moviesPerPage;
   const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
-  const currentMovies = movies.slice(indexOfFirstMovie, indexOfLastMovie);
-  // const currentMovies = filteredMovies.length > 0 ? filteredMovies.slice(indexOfFirstMovie, indexOfLastMovie) : movies.slice(indexOfFirstMovie, indexOfLastMovie);
+  const currentMovies = movies && movies.length > 0 ? movies.slice(indexOfFirstMovie, indexOfLastMovie) : [];
 
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/movies`)
@@ -201,20 +200,15 @@ export default function MoviesPage() {
       .then(res => res.json())
       .then(resJson => setMovies(resJson));
   }
-  // flexFormat provides the formatting options for a "flexbox" layout that enables the album cards to
-  // be displayed side-by-side and wrap to the next line when the screen is too narrow. Flexboxes are
-  // incredibly powerful. You can learn more on MDN web docs linked below (or many other online resources)
-  // https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox
-  // const flexFormat = { display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly' };
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
   };
 
-  console.log("The value of currentMovies is", currentMovies);
+  // console.log("The value of currentMovies is", currentMovies);
 
   return (
-    <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px' }}>
+    <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', display: "flex", flexDirection: "column" }}>
       <Box
         component="form"
         sx={{
@@ -295,7 +289,7 @@ export default function MoviesPage() {
           onChange={(e, newValue) => setYearRange(newValue)}
           valueLabelDisplay="auto"
           aria-labelledby="year-range-slider"
-          min={1920}
+          min={1900}
           max={2023}
           step={1}
           style={{ width: 200 }}
@@ -314,20 +308,21 @@ export default function MoviesPage() {
       </Box>
       {currentMovies && currentMovies.length > 0 ? (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
-        {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <NavLink to={`/movies/${movie.imdb_title_id}`}>
-              <img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </NavLink>
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+          {currentMovies.map(movie => (
+            <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
+              <NavLink to={`/movies/${movie.imdb_title_id}`}>
+                <img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
+              </NavLink>
+              <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
+                {movie.title}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
       ) : (
-        <Box>No movies found</Box>
+        <Box sx={{ fontSize: 24 }}>No movies found</Box>
       )}
+
       {/* <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
         {currentMovies.map(movie => (
           <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
@@ -362,7 +357,14 @@ export default function MoviesPage() {
           </Box>
         ))}
       </Box> */}
-      <div className="movie-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '40px 0' }}>
+      <div className="movie-page"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '40px 0',
+          flex: "1 1 auto"
+        }}>
         <Pagination
           count={totalPages}
           currentPage={currentPage}

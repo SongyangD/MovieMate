@@ -41,9 +41,6 @@ const author = async function(req, res) {
  ********************************/
 // Route 1: GET /movies
 const movies = async function(req, res) {
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
   var query = `
     SELECT *
     FROM movie_data
@@ -85,34 +82,20 @@ const search_movies = async function(req, res) {
   const country = req.query.country ?? '';
   const language = req.query.language ?? '';
   const genre = req.query.genre ?? '';
-  const isOscar = req.query.isOscar === 'true' ? 1 : 0;
-  // const page = parseInt(req.query.page) || 1;
-  // const pageSize = parseInt(req.query.page_size) || 20;
-  // const offset = (page - 1) * pageSize;
-
+  const isOscar = req.query.isOscar === 'true' ? 1 :  null;
+ 
   var query1 = `
     SELECT *
     FROM movie_data
     WHERE title LIKE '%${title}%'
-    AND Oscar_nominated = ${isOscar} 
+    AND (${isOscar} IS NULL OR Oscar_nominated = ${isOscar})
     AND year BETWEEN ${yearLow} AND ${yearHigh} 
     AND genre LIKE '%${genre}%' 
     AND country LIKE '%${country}%' 
     AND language LIKE '%${language}%'
-    ORDER BY year DESC;
+    ORDER BY votes DESC, year DESC;
   `;
 
-  var query2 = `
-    SELECT *
-    FROM movie_data
-    WHERE title LIKE '%${title}%'
-    AND year BETWEEN ${yearLow} AND ${yearHigh} 
-    AND genre LIKE '%${genre}%' 
-    AND country LIKE '%${country}%' 
-    AND language LIKE '%${language}%'
-    ORDER BY year DESC;
-  `;
-  if (isOscar){
     connection.query(query1, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -121,31 +104,17 @@ const search_movies = async function(req, res) {
         res.json(data);
       }
     });
-  }else{
-    connection.query(query2, (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json({});
-      } else {
-        res.json(data);
-      }
-    });
-  }
 }
 
 // Route 4: GET /movie_people/:movie_id
 const movie_people = async (req, res) => {
   const movie_id = req.params.movie_id;
-  const page = parseInt(req.params.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
   var query = `
   SELECT P.name, P.imdb_name_id, P.photo_url
   FROM movie_data M, movie_people MP, people P
   WHERE M.imdb_title_id = MP.imdb_title_id 
   AND MP.imdb_name_id = P.imdb_name_id 
-  AND M.imdb_title_id = '${movie_id}'
-  LIMIT ${offset}, ${pageSize};
+  AND M.imdb_title_id = '${movie_id}';
   `;
   connection.query(query, (err, data) => {
   if (err || data.length === 0) {

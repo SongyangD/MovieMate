@@ -9,6 +9,7 @@ import AlbumsPage from './pages/AlbumsPage';
 import SongsPage from './pages/SongsPage';
 import AlbumInfoPage from './pages/AlbumInfoPage'
 import MoviesPage from './pages/MoviesPage';
+import MoviesInfoPage from "./pages/MoviesInfoPage";
 
 
 // createTheme enables you to customize the look and feel of your app past the default
@@ -33,9 +34,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/albums" element={<AlbumsPage />} />
-          <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
           <Route path="/songs" element={<SongsPage />} />
           <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/movies/:movie_id" element={<MoviesInfoPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
