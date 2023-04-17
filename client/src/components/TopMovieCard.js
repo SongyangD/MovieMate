@@ -9,6 +9,7 @@ import Link from '@mui/material/Link';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FiberManualRecordOutlinedIcon from '@mui/icons-material/FiberManualRecordOutlined';
+import { Tooltip } from '@mui/material';
 const config = require('../config.json');
 
 export default function TopTabs(props) {
@@ -99,7 +100,9 @@ export default function TopTabs(props) {
               {currentPageResults.map(movie => (
                 <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
                   <a href={`/movies/${movie.imdb_title_id}`}>
-                    <img src={movie.poster_url} alt={movie.title} style={{ width: '100%', height: 'auto' }} />
+                  <Tooltip title={movie.description}>
+                    <img src={movie.poster_url} alt={movie.title} style={{ width: '100%', height: '300px' }} />
+                  </Tooltip>
                   </a>
                   <Link href={`/movies/${movie.imdb_title_id}`} underline="none">
                     <Typography variant="body2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '14px' }}>

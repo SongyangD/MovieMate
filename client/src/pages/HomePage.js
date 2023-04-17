@@ -29,30 +29,33 @@ export default function HomePage() {
   }, []);
 
   const genreList = [
-    "Action",
+    "Drama",
     "Comedy",
     "Romance",
-    "Fantasy",
-    "Sci-Fi",
-    "Drama",
-    "Adventure",
-    "Mystery",
-    "History",
-    "Family",
-    "War",
-    "Biography",
     "Crime",
+    "Action",
+    "Adventure",
+    "Thriller",
+    "Mystery",
+    "Fantasy",
+    "History",
+    "Biography",
+    "War",
+    "Family",
+    "Animation",
+    "Music",
+    "Sci-Fi",
     "Sport",
-    "Western"
+    "Musical"
   ];
 
   const languageList = [
     "English",
-    "German",
     "Mandarin",
-    "Italian",
     "French",
     "Spanish",
+    "German",
+    "Italian",
     "Japanese",
     "Russian",
     "Dutch",
@@ -61,7 +64,8 @@ export default function HomePage() {
     "Cantonese",
     "Latin",
     "Hindi",
-    "Thai"
+    "Thai",
+    "Portuguese"
   ];
 
   return (
@@ -72,34 +76,33 @@ export default function HomePage() {
         <h2> ola</h2>
         <p>Welcome</p>
       </div> */}
-      {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
-      {selectedMovieId && <SongCard songId={selectedMovieId} handleClose={() => setSelectedMovieId(null)} />}
-      <h2>Oscar Nominated Movie of the day:</h2>
+      <Box>
+      <Divider>
+        <h1 style={{ color: "grey", float: "right" }}>MovieEase</h1>
+      </Divider>
+      </Box>
+      <h1 style={{ textAlign: 'center'}}>Oscar Movie of the Day       </h1>
       {/* <h2>Check out your Oscar Nominated Movie of the day:&nbsp;
          <Link onClick={() => setSelectedMovieId(oscarMovieOfTheDay.imdb_title_id)}>{oscarMovieOfTheDay.title}</Link> 
       </h2> */}
       <MediaCard></MediaCard>
       <Divider />
-      <h2>Recent 10 Movies by Genre</h2>
+      <h1 style={{ textAlign: 'center' }}>Genre</h1>
       {/* <Button variant="outlined" href="#outlined-buttons">
         Disabled
-      </Button>
-      <Button variant="outlined" href="#outlined-buttons">
-        Link
       </Button> */}
       <Box>
       {/* <GenreTabs></GenreTabs> */}
       <TopTabs
         tabList={genreList}
         fetchUrl={'recent10genre'}
-        defaultTab={'Action'}
+        defaultTab={'Drama'}
         tabType={'Genre'}
       />
       </Box>
       {/* <LazyTable route={`http://${config.server_host}:${config.server_port}/top_songs`} columns={songColumns} /> */}
       <Divider />
-      {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
-      <h2>Top 10 Movies by Language</h2>
+      <h1 style={{ textAlign: 'center' }}>Language</h1>
       <Box>
       {/* <LanguageTabs></LanguageTabs> */}
 
@@ -110,10 +113,12 @@ export default function HomePage() {
         tabType={'Language'}
       />
       </Box>
-      
-      {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
+
       <Divider />
       <p>{appAuthor}</p>
+      <footer>
+        <p>Disclaimer: We created this movie and Oscar data web application as a course project, driven by our passion for cinema. We overcame numerous challenges to bring our vision to life and hope that our platform provides valuable insights for movie enthusiasts. However, please note that this web application is not affiliated with the Academy of Motion Picture Arts and Sciences or the Oscars. The data presented here is based on publicly available information and is provided for informational purposes only. We cannot guarantee its accuracy. We remain impartial and do not endorse any particular movie, actor, or director. We are passionate about this web application and welcome any feedback or suggestions.</p>
+      </footer>
     </Container>
   );
 };

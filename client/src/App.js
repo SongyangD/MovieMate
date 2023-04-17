@@ -7,6 +7,7 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import MoviesPage from './pages/MoviesPage';
 import SongsPage from './pages/SongsPage';
+import OscarPage from './pages/OscarPage';
 import MoviesInfoPage from './pages/MoviesInfoPage'
 
 // createTheme enables you to customize the look and feel of your app past the default
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/movies" element={<MoviesPage />} />
           <Route path="/movies/:movie_id" element={<MoviesInfoPage />} />
           <Route path="/songs" element={<SongsPage />} />
+          <Route path="/oscar_movies" element={<OscarPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
