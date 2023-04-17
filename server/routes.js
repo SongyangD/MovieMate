@@ -582,14 +582,41 @@ const search_won= async function(req, res) {
 const top_oscar_director = async function(req, res) {
 
   var query = `
-  SELECT m.director, COUNT(*) AS num_nominations, COUNT(DISTINCT m.imdb_title_id) AS num_movies
-  FROM movie_data m
-  INNER JOIN oscar o ON m.imdb_title_id = o.imdb_title_id
-  WHERE m.Oscar_nominated = TRUE
-  GROUP BY m.director
-  ORDER BY num_nominations DESC
+  SELECT
+  p.name,
+  p.imdb_name_id,
+  p.photo_url,
+  COUNT(DISTINCT CASE 
+    WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') 
+    THEN o.imdb_title_id ELSE NULL END) AS num_picture_nominations,
+  COUNT(DISTINCT CASE 
+    WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') AND o.winner = 1 
+    THEN o.imdb_title_id ELSE NULL END) AS num_picture_wins,
+  COUNT(DISTINCT CASE 
+    WHEN o.category = 'DIRECTING' 
+    THEN o.imdb_title_id ELSE NULL END) AS num_direction_nominations,
+  COUNT(DISTINCT CASE 
+    WHEN o.category = 'DIRECTING' AND o.winner = 1 
+    THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins
+FROM
+  oscar o
+  JOIN movie_people mp ON o.imdb_title_id = mp.imdb_title_id
+  JOIN people p ON mp.imdb_name_id = p.imdb_name_id
+WHERE
+  mp.category = 'director'
+GROUP BY
+  p.imdb_name_id
+ORDER BY
+num_direction_wins DESC, num_direction_nominations DESC, num_picture_wins DESC, num_picture_nominations DESC
   LIMIT 10;
   `;
+  // SELECT m.director, COUNT(*) AS num_nominations, COUNT(DISTINCT m.imdb_title_id) AS num_movies
+  // FROM movie_data m
+  // INNER JOIN oscar o ON m.imdb_title_id = o.imdb_title_id
+  // WHERE m.Oscar_nominated = TRUE
+  // GROUP BY m.director
+  // ORDER BY num_nominations DESC
+  // LIMIT 10;
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -633,11 +660,10 @@ const oscar_decade = async function(req, res) {
     FROM actor_nominations
     GROUP BY decade
   )
-  SELECT p.name, an.max_nominations as num_nominations, an.decade, ROUND(a.avg_rating, 2) as avg_rating,a.imdb_name_id
+  SELECT p.name, an.max_nominations as num_nominations, an.decade, ROUND(a.avg_rating, 1) as avg_rating,a.imdb_name_id
   FROM actor_nominations_max an
   INNER JOIN actor_nominations a ON a.decade = an.decade AND a.num_nominations = an.max_nominations
   INNER JOIN people p on a.imdb_name_id = p.imdb_name_id;
-  
   `;
 //  LIMIT ${offset}, ${pageSize}
   connection.query(query, (err, data) => {

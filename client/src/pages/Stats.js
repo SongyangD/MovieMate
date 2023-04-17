@@ -34,7 +34,7 @@ export default function Stats() {
   // of objects with each object representing a column. Each object has a "field" property representing
   // what data field to display from the raw data, "headerName" property representing the column label,
   // and an optional renderCell property which given a row returns a custom JSX element to display in the cell.
-  const songColumns = [
+  const decadeColumns = [
     {
       field: 'name',
       headerName: 'Name',
@@ -57,20 +57,28 @@ export default function Stats() {
 
   // TODO (TASK 15): define the columns for the top albums (schema is Album Title, Plays), where Album Title is a link to the album page
   // Hint: this should be very similar to songColumns defined above, but has 2 columns instead of 3
-  const albumColumns = [
+  const directorColumns = [
     {
-      field: 'director',
+      field: 'name',
       headerName: 'Director Name',
      // renderCell: (row) => <NavLink to={`/albums/${row.album_id}`}>{row.title}</NavLink>
       },
       {
-      field: 'num_nominations',
-      headerName: 'Counts'
+      field: 'num_direction_nominations',
+      headerName: 'Direction Nomionations'
       },
       {
-      field: 'num_movies',
-      headerName:'Movies'
-      }
+      field: 'num_direction_wins',
+      headerName:'Direction Wins'
+      },
+      {
+        field: 'num_picture_nominations',
+        headerName: 'Best Picture Nomionations'
+        },
+        {
+        field: 'num_picture_wins',
+        headerName:'Best Picture Wins'
+        },
   ]
 
   const topOscar =[
@@ -101,13 +109,13 @@ export default function Stats() {
         <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
       </h2>
       <Divider />
-      <h2>Each Decade</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={songColumns} defaultPageSize={5} rowsPerPageOptions={[0, 10]}/>
+      <h2>Top Oscar Nominated Movies Participations</h2>
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={decadeColumns} defaultPageSize={5} rowsPerPageOptions={[0, 10]}/>
       <Divider />
       {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
-      <h2>Top 5 Directors</h2>
-      {/* <LazyTable route={ `http://${config.server_host}:${config.server_port}/top_oscar_director`} columns={albumColumns} defaultPageSize={5} rowsPerPageOptions={[5, 10]} />
-       */}
+      <h2>Top 10 Directors</h2>
+      <LazyTable route={ `http://${config.server_host}:${config.server_port}/top_oscar_director`} columns={directorColumns} defaultPageSize={5} rowsPerPageOptions={[5, 10]} />
+      
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
       <Divider />
 
