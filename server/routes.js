@@ -562,18 +562,18 @@ const search_won= async function(req, res) {
   const year= req.query.year ?? -1;
   
   var query_no_year = `
-  SELECT DISTINCT M.imdb_title_id, M.title, M.country, M.year, M.genre, M.avg_vote, O.category, O.winner,O.name
+  SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category, O.winner,O.name
   FROM movie_data M
   JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
-  order by M.year, O.category;
+  order by O.year_ceremony, O.category;
   `;
  // WHERE O.winner = 1
   var query = `
-  SELECT DISTINCT M.imdb_title_id, M.title, M.country, M.year, M.genre, M.avg_vote, O.category,O.winner,O.name
+  SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category,O.winner,O.name
   FROM movie_data M
   JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
-  WHERE (M.year = ${year} OR ${year} IS NULL)
-  order by M.year, O.category;  
+  WHERE (O.year_ceremony = ${year} OR ${year} IS NULL)
+  order by O.year_ceremony, O.category;  
   `;
   //
     // AND O.winner = 1
