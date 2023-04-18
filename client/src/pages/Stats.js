@@ -114,7 +114,7 @@ export default function Stats() {
       <h2>Check out your song of the day:&nbsp;
         <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
       </h2> */}
-      <Title/>
+      {/* <Title/> */}
       <Divider />
       {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
       <h2>Top 10 Directors</h2>
