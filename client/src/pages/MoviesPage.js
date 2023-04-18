@@ -5,6 +5,8 @@ import { Box, TextField, Checkbox, Container, MenuItem, Button, Slider, FormCont
 import Rating from '@mui/material/Rating';
 import Grid from '@mui/material/Grid';
 import defaultImage from '../images/i6.jpg';
+import Tooltip from '@mui/material/Tooltip';
+import { Card, CardContent, CardMedia } from '@mui/material';
 
 const config = require('../config.json');
 const genres = ['All genres', 'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Reality-TV', 'Romance', 'Sci-Fi', 'Sport', 'Thriller', 'War', 'Western'];
@@ -177,7 +179,7 @@ export default function MoviesPage() {
   const [checkIsOscar, setCheckIsOscar] = useState(false);
   const [yearRange, setYearRange] = useState([1900, 2023]);
 
-  const moviesPerPage = 30;
+  const moviesPerPage = 28;
   const totalMovies = movies.length;
   const totalPages = totalMovies > 0 ? Math.ceil(totalMovies / moviesPerPage) : 0;
   const indexOfLastMovie = currentPage * moviesPerPage;
@@ -209,8 +211,10 @@ export default function MoviesPage() {
     setCurrentPage(page);
   };
 
+
   return (
     <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', display: "flex", flexDirection: "column" }}>
+      {/* search bar */}
       <Box
         component="form"
         sx={{
@@ -286,17 +290,19 @@ export default function MoviesPage() {
           }
           label="isOscar"
         />
-        <Slider
-          value={yearRange}
-          onChange={(e, newValue) => setYearRange(newValue)}
-          valueLabelDisplay="auto"
-          aria-labelledby="year-range-slider"
-          min={1900}
-          max={2023}
-          step={1}
-          style={{ width: 200 }}
-        // helperText="Please select the year range"
-        />
+        <Tooltip title="Please select the year range">
+          <Slider
+            value={yearRange}
+            onChange={(e, newValue) => setYearRange(newValue)}
+            valueLabelDisplay="auto"
+            aria-labelledby="year-range-slider"
+            min={1900}
+            max={2023}
+            step={1}
+            style={{ width: 200 }}
+          // helperText="Please select the year range"
+          />
+        </Tooltip>
         {/* <Button onClick={() => search()} sx={{ alignSelf: 'flex-start', height: '55px', width: '30px' }}
           variant="outlined"
           size="small"
@@ -308,31 +314,55 @@ export default function MoviesPage() {
           Search
         </Button>
       </Box>
+      {/*poster*/}
       {moviesLoaded && currentMovies && currentMovies.length > 0 ? (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
           {currentMovies.map(movie => (
-            <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-              <NavLink to={`/movies/${movie.imdb_title_id}`}>
-                <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-              </NavLink>
-              <Grid container spacing={1}>
-                <Grid item xs={12}>
-                  <Typography variant="body1" sx={{ fontSize: '14px', marginBottom: '0px' }}>
-                    {movie.title}
-                  </Typography>
+            <Card key={movie.id} sx={{ width: 'calc(25% - 10px)', minWidth: '250px' }}>
+              <CardMedia component="img" image={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} height="450px" width="300px" />
+              <CardContent>
+                <Typography variant="h6" component="h2">
+                  {movie.title}
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
+                      <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
+                        {`${(movie.avg_vote / 2).toFixed(1)}`}
+                      </Typography>
+                    </div>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                    <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
-                    <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
-                      {`${(movie.avg_vote / 2).toFixed(1)}`}
-                    </Typography>
-                  </div>
-                </Grid>
-              </Grid>
-            </Box>
+              </CardContent>
+            </Card>
           ))}
         </Box>
+        // <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
+        //   {currentMovies.map(movie => (
+        //     <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
+        //       <NavLink to={`/movies/${movie.imdb_title_id}`}>
+        //         <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
+        //       </NavLink>
+        //       {/* movie title and rating starts */}
+        //       <Grid container spacing={1}>
+        //         <Grid item xs={12}>
+        //           <Typography variant="body1" sx={{ fontSize: '14px', marginBottom: '0px' }}>
+        //             {movie.title}
+        //           </Typography>
+        //         </Grid>
+        //         <Grid item xs={12}>
+        //           <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+        //             <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
+        //             <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
+        //               {`${(movie.avg_vote / 2).toFixed(1)}`}
+        //             </Typography>
+        //           </div>
+        //         </Grid>
+        //       </Grid>
+        //     </Box>
+        //   ))}
+        // </Box>
       ) : (
         !moviesLoaded ? <Box sx={{ fontSize: 24 }}>Loading movies...</Box> :
           <Box sx={{ fontSize: 24 }}>No movies found</Box>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Container, Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
 import Card from '@mui/material/Card';
@@ -67,7 +67,12 @@ export default function MovieInfoPage() {
               {movieData.title}
             </Typography>
             {/* <Typography component="legend">Rating:</Typography> */}
-            <Rating name="read-only" value={movieData.avg_vote / 2} readOnly />
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Rating name="read-only" value={movieData.avg_vote / 2} readOnly />
+              <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '20px', marginTop: '0px' }}>
+                {`${(movieData.avg_vote / 2).toFixed(1)}`}
+              </Typography>
+            </Box>
             <Typography variant="body2" color="text.primary" sx={{ fontSize: 20 }}>
               Release Year: <span style={{ color: '#999' }}>{movieData.year}</span>
             </Typography>
