@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import defaultImage from '../images/i6.jpg';
 import Tooltip from '@mui/material/Tooltip';
 import { Card, CardContent, CardMedia } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const config = require('../config.json');
 const genres = ['All genres', 'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Reality-TV', 'Romance', 'Sci-Fi', 'Sport', 'Thriller', 'War', 'Western'];
@@ -319,7 +320,15 @@ export default function MoviesPage() {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
           {currentMovies.map(movie => (
             <Card key={movie.id} sx={{ width: 'calc(25% - 10px)', minWidth: '250px' }}>
-              <CardMedia component="img" image={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} height="450px" width="300px" />
+              <Link to={`/movies/${movie.imdb_title_id}`}>
+                <CardMedia
+                  component="img"
+                  image={movie.poster_url ? movie.poster_url : defaultImage}
+                  alt={movie.title}
+                  height="450px"
+                  width="300px"
+                />
+              </Link>
               <CardContent>
                 <Typography variant="h6" component="h2">
                   {movie.title}
@@ -341,9 +350,9 @@ export default function MoviesPage() {
         // <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
         //   {currentMovies.map(movie => (
         //     <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-        //       <NavLink to={`/movies/${movie.imdb_title_id}`}>
-        //         <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-        //       </NavLink>
+        // <NavLink to={`/movies/${movie.imdb_title_id}`}>
+        //   <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
+        // </NavLink>
         //       {/* movie title and rating starts */}
         //       <Grid container spacing={1}>
         //         <Grid item xs={12}>
