@@ -677,9 +677,10 @@ const oscar_decade = async function(req, res) {
   SELECT p.name, an.max_nominations as num_nominations, an.decade, ROUND(a.avg_rating, 1) as avg_rating,a.imdb_name_id
   FROM actor_nominations_max an
   INNER JOIN actor_nominations a ON a.decade = an.decade AND a.num_nominations = an.max_nominations
-  INNER JOIN people p on a.imdb_name_id = p.imdb_name_id;
+  INNER JOIN people p on a.imdb_name_id = p.imdb_name_id
+  LIMIT ${offset}, ${pageSize};
   `;
-//  LIMIT ${offset}, ${pageSize}
+
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Container, Divider, Link } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import Title from  '../components/TitleCard';
 
 import LazyTable from '../components/LazyTable';
 import SongCard from '../components/SongCard';
+import DirectorsTable from '../components/DirectorsCard';
 const config = require('../config.json');
 
 export default function Stats() {
@@ -57,33 +59,33 @@ export default function Stats() {
 
   // TODO (TASK 15): define the columns for the top albums (schema is Album Title, Plays), where Album Title is a link to the album page
   // Hint: this should be very similar to songColumns defined above, but has 2 columns instead of 3
-  const directorColumns = [
-    {
-      field: 'name',
-      headerName: 'Director Name',
-     // renderCell: (row) => <NavLink to={`/albums/${row.album_id}`}>{row.title}</NavLink>
-      },
-      {
-      field: 'num_direction_nominations',
-      headerName: 'Direction Nomionations'
-      },
-      {
-      field: 'num_direction_wins',
-      headerName:'Direction Wins'
-      },
-      {
-    field: 'num_picture_nominations',
-    headerName: 'Best Picture Nomionations'
-    },
-    {
-        field: 'num_picture_wins',
-        headerName:'Best Picture Wins'
-        },
-        {
-        field: 'avg_rating',
-        headerName:'Average Movie Ratings'
-        },
-  ]
+//   const directorColumns = [
+//     {
+//       field: 'name',
+//       headerName: 'Director Name',
+//      // renderCell: (row) => <NavLink to={`/albums/${row.album_id}`}>{row.title}</NavLink>
+//       },
+//       {
+//       field: 'num_direction_nominations',
+//       headerName: 'Direction Nomionations'
+//       },
+//       {
+//       field: 'num_direction_wins',
+//       headerName:'Direction Wins'
+//       },
+//       {
+//     field: 'num_picture_nominations',
+//     headerName: 'Best Picture Nomionations'
+//     },
+//     {
+//         field: 'num_picture_wins',
+//         headerName:'Best Picture Wins'
+//         },
+//         {
+//         field: 'avg_rating',
+//         headerName:'Average Movie Ratings'
+//         },
+//   ]
 
   const topOscar =[
     {field:'title',
@@ -108,20 +110,22 @@ export default function Stats() {
   return (
     <Container>
       {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
-      {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
+      {/* {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
       <h2>Check out your song of the day:&nbsp;
         <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
-      </h2>
-      <Divider />
-      <h2>Top Oscar Nominated Movies Participations</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={decadeColumns} defaultPageSize={5} rowsPerPageOptions={[0, 10]}/>
+      </h2> */}
+      <Title/>
       <Divider />
       {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
       <h2>Top 10 Directors</h2>
-      <LazyTable route={ `http://${config.server_host}:${config.server_port}/top_oscar_director`} columns={directorColumns} defaultPageSize={5} rowsPerPageOptions={[5, 10]} />
-      
+      {/* <LazyTable route={ `http://${config.server_host}:${config.server_port}/top_oscar_director`} columns={directorColumns} defaultPageSize={5} rowsPerPageOptions={[5, 10]} /> */}
+      <DirectorsTable fetchUrl={'top_oscar_director'}/>
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
       <Divider />
+      <Divider />
+      <h2>Top Oscar Nominated Movies Participations</h2>
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={decadeColumns} defaultPageSize={5} rowsPerPageOptions={[0, 10]}/>
+
 
       <h2>Top 5 Rated Oscar Movies</h2>
       {/* <LazyTable route={ `http://${config.server_host}:${config.server_port}/top10_rated_oscar_movies`} columns={topOscar} defaultPageSize={5} rowsPerPageOptions={[5, 10]} />
