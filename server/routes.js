@@ -597,17 +597,31 @@ const top_oscar_director = async function(req, res) {
     THEN o.imdb_title_id ELSE NULL END) AS num_direction_nominations,
   COUNT(DISTINCT CASE 
     WHEN o.category = 'DIRECTING' AND o.winner = 1 
-    THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins
+    THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins,
+    ROUND(AVG(m.avg_vote),1) AS avg_rating
 FROM
   oscar o
   JOIN movie_people mp ON o.imdb_title_id = mp.imdb_title_id
   JOIN people p ON mp.imdb_name_id = p.imdb_name_id
+  LEFT JOIN (
+    SELECT
+      p.imdb_name_id,
+      AVG(m.avg_vote) AS avg_vote
+    FROM
+      movie_people mp
+      JOIN movie_data m ON mp.imdb_title_id = m.imdb_title_id
+      JOIN people p ON mp.imdb_name_id = p.imdb_name_id
+    WHERE
+      mp.category = 'director'
+    GROUP BY
+      p.imdb_name_id
+  ) m ON p.imdb_name_id = m.imdb_name_id
 WHERE
   mp.category = 'director'
 GROUP BY
-  p.imdb_name_id
+  p.imdb_name_id, p.name, p.photo_url
 ORDER BY
-num_direction_wins DESC, num_direction_nominations DESC, num_picture_wins DESC, num_picture_nominations DESC
+  num_direction_wins DESC, num_direction_nominations DESC, num_picture_wins DESC, num_picture_nominations DESC, avg_rating DESC
   LIMIT 10;
   `;
   // SELECT m.director, COUNT(*) AS num_nominations, COUNT(DISTINCT m.imdb_title_id) AS num_movies

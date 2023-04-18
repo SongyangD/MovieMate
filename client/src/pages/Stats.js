@@ -72,12 +72,16 @@ export default function Stats() {
       headerName:'Direction Wins'
       },
       {
-        field: 'num_picture_nominations',
-        headerName: 'Best Picture Nomionations'
-        },
-        {
+    field: 'num_picture_nominations',
+    headerName: 'Best Picture Nomionations'
+    },
+    {
         field: 'num_picture_wins',
         headerName:'Best Picture Wins'
+        },
+        {
+        field: 'avg_rating',
+        headerName:'Average Movie Ratings'
         },
   ]
 
