@@ -42,7 +42,7 @@ const author = async function(req, res) {
 // Route 1: GET /movies
 const movies = async function(req, res) {
   var query = `
-    SELECT *
+    SELECT title, avg_vote, poster_url,imdb_title_id
     FROM movie_data
     ORDER BY votes DESC, year DESC;
   `;
@@ -85,7 +85,7 @@ const search_movies = async function(req, res) {
   const isOscar = req.query.isOscar === 'true' ? 1 :  null;
  
   var query1 = `
-    SELECT *
+    SELECT title, avg_vote, year, director, genre, country, language, duration, Oscar_nominated, 
     FROM movie_data
     WHERE title LIKE '%${title}%'
     AND (${isOscar} IS NULL OR Oscar_nominated = ${isOscar})
