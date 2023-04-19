@@ -21,7 +21,6 @@ const author = async function(req, res) {
   const name = '168Club';
   const pennKey = 'team168';
 
-
   // checks the value of type the request parameters
   // note that parameters are required and are specified in server.js in the endpoint by a colon (e.g. /author/:type)
   if (req.params.type === 'name') {
@@ -48,7 +47,6 @@ const movies = async function(req, res) {
     SELECT title, imdb_title_id,poster_url,avg_vote
     FROM movie_data
     ORDER BY avg_vote DESC, year DESC;
-
     ;
   `;
       // LIMIT ${offset}, ${pageSize}
@@ -197,7 +195,7 @@ const oscarMovieRecommended = async function (req,res){
 }
 
 // Route 6: GET /recent10genre/:genre
-const recent10genre = async function(req, res) {
+const recentgenre = async function(req, res) {
   // Most of the code is already written for you, you just need to fill in the query
   const genre = req.params.genre;
 
@@ -222,7 +220,7 @@ const recent10genre = async function(req, res) {
 }
 
 // Route 7: GET /top10language/:language
-const top10language = async function(req, res) {
+const toplanguage = async function(req, res) {
   // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
   // Most of the code is already written for you, you just need to fill in the query
   const language = req.params.language;
@@ -784,8 +782,8 @@ module.exports = {
   top10_rated_oscar_movies,
   movie_count,
   oscarMovieRecommended,
-  recent10genre,
-  top10language,
+  recentgenre,
+  toplanguage,
   search_oscar_people,
   search_oscar_filter,
   top_oscar_director,

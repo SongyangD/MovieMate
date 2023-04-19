@@ -117,7 +117,7 @@ export default function Stats() {
       {/* <Title/> */}
       <Divider />
       {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
-      <h2>Top 10 Directors</h2>
+      <h2>Top 10 Oscar Directors</h2>
       {/* <LazyTable route={ `http://${config.server_host}:${config.server_port}/top_oscar_director`} columns={directorColumns} defaultPageSize={5} rowsPerPageOptions={[5, 10]} /> */}
       <DirectorsTable fetchUrl={'top_oscar_director'}/>
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}

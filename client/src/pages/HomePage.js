@@ -86,7 +86,7 @@ export default function HomePage() {
       {/* <GenreTabs></GenreTabs> */}
       <TopTabs
         tabList={genreList}
-        fetchUrl={'recent10genre'}
+        fetchUrl={'recentgenre'}
         defaultTab={'Drama'}
         tabType={'Genre'}
       />
@@ -99,7 +99,7 @@ export default function HomePage() {
 
       <TopTabs
         tabList={languageList}
-        fetchUrl={'top10language'}
+        fetchUrl={'toplanguage'}
         defaultTab={'English'}
         tabType={'Language'}
       />
