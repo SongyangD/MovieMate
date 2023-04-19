@@ -7,7 +7,9 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import AlbumsPage from './pages/AlbumsPage';
 import SongsPage from './pages/SongsPage';
-import AlbumInfoPage from './pages/AlbumInfoPage'
+import AlbumInfoPage from './pages/AlbumInfoPage';
+import PeoplePage from './pages/PeoplePage';
+import PeopleInfoPage from "./pages/PeopleInfoPage";
 
 // createTheme enables you to customize the look and feel of your app past the default
 // in this case, we only change the color scheme
@@ -33,6 +35,8 @@ export default function App() {
           <Route path="/albums" element={<AlbumsPage />} />
           <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
           <Route path="/songs" element={<SongsPage />} />
+          <Route path="/people" element={<PeoplePage />} />
+          <Route path="/people/:imdb_name_id" element={<PeopleInfoPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
