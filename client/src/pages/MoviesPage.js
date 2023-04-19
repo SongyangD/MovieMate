@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Pagination from '../components/Pagination';
-import { useLocation } from 'react-router-dom';
 import { Box, TextField, Checkbox, Container, MenuItem, Button, Slider, FormControlLabel, Typography } from '@mui/material';
+import Rating from '@mui/material/Rating';
+import Grid from '@mui/material/Grid';
+import defaultImage from '../images/i6.jpg';
+import Tooltip from '@mui/material/Tooltip';
+import { Card, CardContent, CardMedia } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const config = require('../config.json');
 const genres = ['All genres', 'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Reality-TV', 'Romance', 'Sci-Fi', 'Sport', 'Thriller', 'War', 'Western'];
@@ -25,6 +30,7 @@ const languages = [
   'Dari',
   'Danish',
   'Dutch',
+  'English',
   'Estonian',
   'Finnish',
   'Filipino',
@@ -92,7 +98,6 @@ const countries = [
   'Australia',
   'Austria',
   'Belgium',
-  'Bosnia and Herzegovina',
   'Brazil',
   'Bulgaria',
   'Canada',
@@ -107,7 +112,6 @@ const countries = [
   'East Germany',
   'Egypt',
   'Estonia',
-  'Federal Republic of Yugoslavia',
   'Finland',
   'France',
   'Georgia',
@@ -137,7 +141,6 @@ const countries = [
   'Poland',
   'Portugal',
   'Qatar',
-  'Republic of North Macedonia',
   'Romania',
   'Russia',
   'Senegal',
@@ -168,6 +171,7 @@ const countries = [
 export default function MoviesPage() {
   const [movies, setMovies] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [moviesLoaded, setMoviesLoaded] = useState(false);
 
   const [title, setTitle] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('');
@@ -176,19 +180,20 @@ export default function MoviesPage() {
   const [checkIsOscar, setCheckIsOscar] = useState(false);
   const [yearRange, setYearRange] = useState([1900, 2023]);
 
-  const moviesPerPage = 30;
+  const moviesPerPage = 28;
   const totalMovies = movies.length;
   const totalPages = totalMovies > 0 ? Math.ceil(totalMovies / moviesPerPage) : 0;
   const indexOfLastMovie = currentPage * moviesPerPage;
   const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
   const currentMovies = movies && movies.length > 0 ? movies.slice(indexOfFirstMovie, indexOfLastMovie) : [];
 
-  // const currentMovies = filteredMovies.length > 0 ? filteredMovies.slice(indexOfFirstMovie, indexOfLastMovie) : movies.slice(indexOfFirstMovie, indexOfLastMovie);
-
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/movies`)
       .then(res => res.json())
-      .then(resJson => setMovies(resJson));
+      .then(resJson => {
+        setMovies(resJson);
+        setMoviesLoaded(true);
+      });
   }, []);
 
   const search = () => {
@@ -202,20 +207,15 @@ export default function MoviesPage() {
       .then(res => res.json())
       .then(resJson => setMovies(resJson));
   }
-  // flexFormat provides the formatting options for a "flexbox" layout that enables the album cards to
-  // be displayed side-by-side and wrap to the next line when the screen is too narrow. Flexboxes are
-  // incredibly powerful. You can learn more on MDN web docs linked below (or many other online resources)
-  // https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox
-  // const flexFormat = { display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly' };
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
   };
 
-  // console.log("The value of currentMovies is", currentMovies);
 
   return (
-    <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px' }}>
+    <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', display: "flex", flexDirection: "column" }}>
+      {/* search bar */}
       <Box
         component="form"
         sx={{
@@ -291,17 +291,19 @@ export default function MoviesPage() {
           }
           label="isOscar"
         />
-        <Slider
-          value={yearRange}
-          onChange={(e, newValue) => setYearRange(newValue)}
-          valueLabelDisplay="auto"
-          aria-labelledby="year-range-slider"
-          min={1900}
-          max={2023}
-          step={1}
-          style={{ width: 200 }}
-        // helperText="Please select the year range"
-        />
+        <Tooltip title="Please select the year range">
+          <Slider
+            value={yearRange}
+            onChange={(e, newValue) => setYearRange(newValue)}
+            valueLabelDisplay="auto"
+            aria-labelledby="year-range-slider"
+            min={1900}
+            max={2023}
+            step={1}
+            style={{ width: 200 }}
+          // helperText="Please select the year range"
+          />
+        </Tooltip>
         {/* <Button onClick={() => search()} sx={{ alignSelf: 'flex-start', height: '55px', width: '30px' }}
           variant="outlined"
           size="small"
@@ -313,57 +315,75 @@ export default function MoviesPage() {
           Search
         </Button>
       </Box>
-      {currentMovies && currentMovies.length > 0 ? (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
-        {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <NavLink to={`/movies/${movie.imdb_title_id}`}>
-              < img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </NavLink>
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+      {/*poster*/}
+      {moviesLoaded && currentMovies && currentMovies.length > 0 ? (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
+          {currentMovies.map(movie => (
+            <Card key={movie.id} sx={{ width: 'calc(25% - 10px)', minWidth: '250px' }}>
+              <Link to={`/movies/${movie.imdb_title_id}`}>
+                <CardMedia
+                  component="img"
+                  image={movie.poster_url ? movie.poster_url : defaultImage}
+                  alt={movie.title}
+                  height="450px"
+                  width="300px"
+                />
+              </Link>
+              <CardContent>
+                <Typography variant="h6" component="h2">
+                  {movie.title}
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
+                      <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
+                        {`${(movie.avg_vote / 2).toFixed(1)}`}
+                      </Typography>
+                    </div>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+        // <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
+        //   {currentMovies.map(movie => (
+        //     <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
+        // <NavLink to={`/movies/${movie.imdb_title_id}`}>
+        //   <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
+        // </NavLink>
+        //       {/* movie title and rating starts */}
+        //       <Grid container spacing={1}>
+        //         <Grid item xs={12}>
+        //           <Typography variant="body1" sx={{ fontSize: '14px', marginBottom: '0px' }}>
+        //             {movie.title}
+        //           </Typography>
+        //         </Grid>
+        //         <Grid item xs={12}>
+        //           <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+        //             <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
+        //             <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
+        //               {`${(movie.avg_vote / 2).toFixed(1)}`}
+        //             </Typography>
+        //           </div>
+        //         </Grid>
+        //       </Grid>
+        //     </Box>
+        //   ))}
+        // </Box>
       ) : (
-        <Box>No movies found</Box>
+        !moviesLoaded ? <Box sx={{ fontSize: 24 }}>Loading movies...</Box> :
+          <Box sx={{ fontSize: 24 }}>No movies found</Box>
       )}
-      {/* <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
-        {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <a href=" ">
-              < img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </a >
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))}
-      </Box> */}
-      {/* {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <a href=" ">
-              < img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </a >
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))} */}
-      {/* <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '30px' }}>
-        {currentMovies.map(movie => (
-          <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-            <a href=" ">
-              < img src={movie.poster_url} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-            </a >
-            <Typography variant="h2" sx={{ marginTop: '5px', textAlign: 'center', fontSize: '12px' }}>
-              {movie.title}
-            </Typography>
-          </Box>
-        ))}
-      </Box> */}
-      <div className="movie-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '40px 0' }}>
+      <div className="movie-page"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '40px 0',
+          flex: "1 1 auto"
+        }}>
         <Pagination
           count={totalPages}
           currentPage={currentPage}

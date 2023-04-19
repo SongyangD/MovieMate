@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow ,Tooltip,Avatar } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow ,Tooltip,Avatar,Rating } from '@mui/material';
 import { Star, StarBorder } from '@mui/icons-material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
@@ -67,7 +67,7 @@ function DirectorsTable(props) {
                 }
               </TableCell>
               <TableCell align="left">
-              <div>
+              {/* <div>
                 {Array.from(Array(Math.min(Math.round(director.avg_rating/2), 5)), (_, index) => (
                     <Star key={index} fontSize="small" htmlColor="#FFD700" />
                 ))}
@@ -75,8 +75,11 @@ function DirectorsTable(props) {
                     <StarBorder key={index} fontSize="small" htmlColor="#FFD700" />
                 ))}
                 <span style={{ marginLeft: "5px" }}>{director.avg_rating.toFixed(1)}</span>
+                </div> */}
+                <div style={{ display: "flex", alignItems: "center" }}>
+                <Rating value={director.avg_rating / 2 + 0} precision={0.25} max={5} readOnly />
+                <span style={{ marginLeft: "5px" }}>{director.avg_rating.toFixed(1)}</span>
                 </div>
-
               </TableCell>
             </TableRow>
           ))}
