@@ -105,7 +105,22 @@ export default function Stats() {
     {field:'movie_title',
   headerName:'Movie Title'}
   ]
-
+  const oscarActress=[
+    {field:'name',
+  headerName:'Name'},
+    {field:'oscar_freq',
+  headerName:'Oscar Movie Participation'},
+  {field:'total_movies',
+  headerName:'Total Movies Participation'},
+    {field:'max_oscar_age',
+  headerName:'Maximum Age at Oscar Nomination'},
+  {field:'max_age',
+  headerName:'Maximum Age of Movie Performance'},
+  {field:'average_age',
+  headerName:'Average Age of Movie Performance'},
+  {field:'average_rating',
+  headerName:'Average Ratings of Oscar Movies'}
+  ]
   return (
     <Container>
       {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
@@ -121,9 +136,11 @@ export default function Stats() {
       <DirectorsTable fetchUrl={'top_oscar_director'}/>
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
       <Divider />
+      <h2>Ladies, Don't Let Anybody Tell You That You're Past Your Prime!</h2>
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/oscar_actress`} columns={oscarActress} defaultPageSize={10} rowsPerPageOptions={[0, 10]}/>
       <Divider />
       <h2>Top Oscar Nominated Movies Participations</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={decadeColumns} defaultPageSize={5} rowsPerPageOptions={[0, 10]}/>
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={decadeColumns} defaultPageSize={10} rowsPerPageOptions={[0, 10]}/>
 
 
       <h2>Top 5 Rated Oscar Movies</h2>

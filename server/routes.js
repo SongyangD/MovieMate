@@ -664,7 +664,7 @@ const oscar_decade = async function(req, res) {
     FROM movie_people mp
     INNER JOIN oscar_movies_with_rating om 
     ON mp.imdb_title_id = om.imdb_title_id
-    WHERE mp.category = 'actor'
+    WHERE mp.category IN ('actor','actress')
     GROUP BY mp.imdb_name_id, decade
   ),
   actor_nominations_max AS (
@@ -676,6 +676,7 @@ const oscar_decade = async function(req, res) {
   FROM actor_nominations_max an
   INNER JOIN actor_nominations a ON a.decade = an.decade AND a.num_nominations = an.max_nominations
   INNER JOIN people p on a.imdb_name_id = p.imdb_name_id
+  WHERE an.decade <> '1920-1929'
   LIMIT ${offset}, ${pageSize};
   `;
 
@@ -735,7 +736,57 @@ const movie_count = async function(req, res) {
    } 
 }
 
+// Route 18: 静态页面 /stats
+const oscar_actress = async function(req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.page_size) || 20;
+  const offset = (page - 1) * pageSize;
 
+  var query = `
+  WITH oscar_movies AS (
+    SELECT DISTINCT imdb_title_id, year_ceremony
+    FROM oscar
+  ),movie_counts AS (
+    SELECT imdb_name_id, COUNT(DISTINCT imdb_title_id) AS total_movies
+    FROM movie_people
+    GROUP BY imdb_name_id
+  ),movie_ages AS (
+    SELECT mp.imdb_name_id,
+           MAX(m.year - YEAR(p.date_of_birth)) AS max_age,
+           ROUND(AVG(m.year - YEAR(p.date_of_birth))) AS average_age
+    FROM movie_people mp
+    JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
+    JOIN people p ON p.imdb_name_id = mp.imdb_name_id
+    WHERE mp.category = 'actress'
+    GROUP BY mp.imdb_name_id
+  )
+  SELECT mp.imdb_name_id, p.name, mc.total_movies, p.photo_url,
+         COUNT(*) AS oscar_freq,
+         ROUND(MAX(om.year_ceremony - YEAR(p.date_of_birth))) AS max_oscar_age,
+         ROUND(AVG(m.avg_vote),1) AS average_rating,
+         ma.max_age,
+         ma.average_age
+         FROM movie_people mp
+         JOIN oscar_movies om ON om.imdb_title_id = mp.imdb_title_id
+         JOIN people p ON p.imdb_name_id = mp.imdb_name_id
+         JOIN movie_counts mc ON mc.imdb_name_id = mp.imdb_name_id
+         JOIN movie_ages ma ON ma.imdb_name_id = mp.imdb_name_id
+         JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
+         WHERE mp.category = 'actress'
+         GROUP BY mp.imdb_name_id, p.name, ma.max_age,ma.average_age
+  ORDER BY AVG(om.year_ceremony - YEAR(p.date_of_birth)) DESC  
+  LIMIT ${offset}, ${pageSize};
+  `;
+
+  connection.query(query, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+};
 
 
 /************************
@@ -790,4 +841,5 @@ module.exports = {
   search_won,
   oscar_decade,
   author,
+  oscar_actress,
 }
