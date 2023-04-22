@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Divider, Box} from '@mui/material';
+import { Container, Divider, Box } from '@mui/material';
 // import { NavLink } from 'react-router-dom';
 import MediaCard from '../components/RandomMovieCard';
 import TopTabs from '../components/TopMovieCard'
@@ -61,18 +61,18 @@ export default function HomePage() {
 
   return (
     <Container>
-      
+
       {/* <div>
         <h1>MovieEase</h1>
         <h2> ola</h2>
         <p>Welcome</p>
       </div> */}
       <Box>
-      <Divider>
-        <h1 style={{ color: "grey", float: "right" }}>MovieEase</h1>
-      </Divider>
+        <Divider>
+          <h1 style={{ color: "grey", float: "right" }}>MovieEase</h1>
+        </Divider>
       </Box>
-      <h1 style={{ textAlign: 'center'}}>Oscar Movie of the Day       </h1>
+      <h1 style={{ textAlign: 'center' }}>Oscar Movie of the Day       </h1>
       {/* <h2>Check out your Oscar Nominated Movie of the day:&nbsp;
          <Link onClick={() => setSelectedMovieId(oscarMovieOfTheDay.imdb_title_id)}>{oscarMovieOfTheDay.title}</Link> 
       </h2> */}
@@ -83,26 +83,26 @@ export default function HomePage() {
         Disabled
       </Button> */}
       <Box>
-      {/* <GenreTabs></GenreTabs> */}
-      <TopTabs
-        tabList={genreList}
-        fetchUrl={'recentgenre'}
-        defaultTab={'Drama'}
-        tabType={'Genre'}
-      />
+        {/* <GenreTabs></GenreTabs> */}
+        <TopTabs
+          tabList={genreList}
+          fetchUrl={'recentgenre'}
+          defaultTab={'Drama'}
+          tabType={'Genre'}
+        />
       </Box>
       {/* <LazyTable route={`http://${config.server_host}:${config.server_port}/top_songs`} columns={songColumns} /> */}
       <Divider />
       <h1 style={{ textAlign: 'center' }}>Language</h1>
       <Box>
-      {/* <LanguageTabs></LanguageTabs> */}
+        {/* <LanguageTabs></LanguageTabs> */}
 
-      <TopTabs
-        tabList={languageList}
-        fetchUrl={'toplanguage'}
-        defaultTab={'English'}
-        tabType={'Language'}
-      />
+        <TopTabs
+          tabList={languageList}
+          fetchUrl={'toplanguage'}
+          defaultTab={'English'}
+          tabType={'Language'}
+        />
       </Box>
 
       <Divider />
