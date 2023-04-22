@@ -171,8 +171,7 @@ export default function OscarPage() {
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
       />
-{/* 
-      <MyChart></MyChart> */}
+{/*   <MyChart></MyChart> */}
       
 
     </Container>
