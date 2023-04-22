@@ -763,7 +763,7 @@ const oscar_actress = async function(req, res) {
   SELECT mp.imdb_name_id, p.name, mc.total_movies, p.photo_url,
          COUNT(*) AS oscar_freq,
          ROUND(MAX(om.year_ceremony - YEAR(p.date_of_birth))) AS max_oscar_age,
-         ROUND(AVG(m.avg_vote),1) AS average_rating,
+         ROUND(AVG(m.avg_vote),1) AS avg_rating,
          ma.max_age,
          ma.average_age
          FROM movie_people mp

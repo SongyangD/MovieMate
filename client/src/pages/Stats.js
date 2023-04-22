@@ -5,6 +5,8 @@ import { NavLink } from 'react-router-dom';
 import LazyTable from '../components/LazyTable';
 import SongCard from '../components/SongCard';
 import DirectorsTable from '../components/DirectorsCard';
+import ActressesTable from '../components/ActressCard';
+
 const config = require('../config.json');
 
 export default function Stats() {
@@ -118,7 +120,7 @@ export default function Stats() {
   headerName:'Maximum Age of Movie Performance'},
   {field:'average_age',
   headerName:'Average Age of Movie Performance'},
-  {field:'average_rating',
+  {field:'avg_rating',
   headerName:'Average Ratings of Oscar Movies'}
   ]
   return (
@@ -137,11 +139,19 @@ export default function Stats() {
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
       <Divider />
       <h2>Ladies, Don't Let Anybody Tell You That You're Past Your Prime!</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/oscar_actress`} columns={oscarActress} defaultPageSize={10} rowsPerPageOptions={[0, 10]}/>
+      {/* <LazyTable route={`http://${config.server_host}:${config.server_port}/oscar_actress`} columns={oscarActress} defaultPageSize={10} rowsPerPageOptions={[0, 10]}/> */}
+      <ActressesTable 
+      fetchUrl={'oscar_actress'}
+      defaultPageSize={5} 
+      rowsPerPageOptions={[0, 5]}/>
       <Divider />
       <h2>Top Oscar Nominated Movies Participations</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/stats`} columns={decadeColumns} defaultPageSize={10} rowsPerPageOptions={[0, 10]}/>
-
+      <LazyTable 
+      route={`http://${config.server_host}:${config.server_port}/stats`} 
+      columns={decadeColumns} 
+      defaultPageSize={10} 
+      rowsPerPageOptions={[0, 10]}
+      />
 
       <h2>Top 5 Rated Oscar Movies</h2>
       {/* <LazyTable route={ `http://${config.server_host}:${config.server_port}/top10_rated_oscar_movies`} columns={topOscar} defaultPageSize={5} rowsPerPageOptions={[5, 10]} />

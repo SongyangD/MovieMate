@@ -27,9 +27,9 @@ function DirectorsTable(props) {
             <TableCell></TableCell>
             <TableCell align="left">Direction Nominations</TableCell>
             <TableCell align="left">Direction Wins</TableCell>
-            <TableCell align="left">Picture Nominations</TableCell>
-            <TableCell align="left">Picture Wins</TableCell>
-            <TableCell align="left">Average Rating</TableCell>
+            <TableCell align="left">Best Picture Nominations</TableCell>
+            <TableCell align="left">Best Picture Wins</TableCell>
+            <TableCell align="left">Average Movie Rating</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -37,7 +37,7 @@ function DirectorsTable(props) {
             <TableRow key={director.imdb_name_id}>
               
               <TableCell>
-                <Tooltip title={`Direction Wins: ${director.num_direction_wins}; Picture Wins: ${director.num_picture_wins}`}>
+                <Tooltip title={`Best Director Wins: ${director.num_direction_wins}; Best Picture Wins: ${director.num_picture_wins}`}>
                     <Avatar alt={director.name} src={director.photo_url} sx={{ width: 66, height: 66 }} />
                 </Tooltip>
                 </TableCell>
