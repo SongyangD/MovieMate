@@ -68,11 +68,12 @@ export default function MovieInfoPage() {
             </Typography>
             {/* <Typography component="legend">Rating:</Typography> */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Rating name="read-only" value={movieData.avg_vote / 2} readOnly />
+              <Rating value={movieData.avg_vote / 2 + 0} precision={0.25} max={5} readOnly />
               <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '20px', marginTop: '0px' }}>
                 {`${(movieData.avg_vote / 2).toFixed(1)}`}
               </Typography>
             </Box>
+
             <Typography variant="body2" color="text.primary" sx={{ fontSize: 20 }}>
               Release Year: <span style={{ color: '#999' }}>{movieData.year}</span>
             </Typography>
@@ -89,7 +90,7 @@ export default function MovieInfoPage() {
               Language: <span style={{ color: '#999' }}>{movieData.language}</span>
             </Typography>
             <Typography variant="body2" color="text.primary" sx={{ fontSize: 20 }}>
-              Duration: <span style={{ color: '#999' }}>{movieData.duration}</span>
+              Duration: <span style={{ color: '#999' }}>{movieData.duration}</span> mins
             </Typography>
             <Typography variant="body2" color="text.primary" sx={{ fontSize: 20 }}>
               Oscar Nominations: <span style={{ color: '#999' }}>{movieData.Oscar_nominated ? 'Yes' : 'No'}</span>

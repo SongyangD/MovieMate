@@ -40,7 +40,8 @@ export default function NavBar() {
           <NavText href='/' text='Home' />
           <NavText href='/movies' text='Movie' />
           <NavText href='/people' text='People' />
-          <NavText href='/oscar_movies' text='Oscar' />
+          <NavText href='/oscar' text='Oscar' />
+          <NavText href='/stats' text='Stats' />
         </Toolbar>
       </Container>
     </AppBar>
