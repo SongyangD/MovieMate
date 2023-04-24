@@ -93,7 +93,6 @@ export default function PeopleInfoPage() {
         )}
           <Typography variant="h6" sx={{ mb: 2 }}>Related People</Typography>
           <div style={{ display: 'flex', overflowX: 'scroll' }}>
-          {console.log('relatedActors:', relatedActors)}
             {relatedActors.map(person => (
               <div key={person.name} style={{ marginRight: 50 }}>
               <NavLink to={`/people/${person.id}`} exact style={{ zIndex: 1 }}>
