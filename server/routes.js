@@ -432,7 +432,7 @@ const top10_rated_oscar_movies = async function(req, res) {
   // const pageSize = parseInt(req.query.page_size) || 20;
   // const offset = (page - 1) * pageSize;
   var query = `
-  SELECT  *
+  SELECT  title, country, year, genre
   FROM movie_data
   WHERE Oscar_nominated = True
   Order by avg_vote DESC
@@ -488,70 +488,7 @@ LIMIT ${offset}, ${pageSize};
   });
 };
  
-// Route 15: GET / search_oscar_filter
-// 奥斯卡页主体
-// 不要了
-const search_oscar_filter = async function(req, res) {
- 
-  //输入 1) no title, language, 2) no title, no language, 3) title, language, 4) title, no language
-  // 4 个组合 vs 语言必须
-  const title = req.query.title ?? '';
-  const language = req.query.language ?? '';
 
-  // const page = parseInt(req.query.page) || 1;
-  // const pageSize = parseInt(req.query.page_size) || 20;
-  // const offset = (page - 1) * pageSize;
- 
-  //滑杆 duration / year
-  // const duration_low = req.query.duration_low ?? 0;
-  // const duration_high = req.query.duration_high ?? 600;
- 
-//   var query_title = `
-//       SELECT *
-//       FROM oscar O, 
-//       WHERE M.title LIKE '%${title}%'  
-//             AND O.language LIKE '%${language}%'
-//             AND O.imdb_title_id = M.imdb_title_id
-//       Order By M.title      
-//   `;
-
-//   var query_no_title =`
-//       SELECT *
-//       FROM oscar O, movie_data M
-//       WHERE M.language LIKE '%${language}%'
-//             AND O.imdb_title_id = M.imdb_title_id
-//       Order by M.title
-  
-// `;
-
-
-//   // if title empty
-//   if(title === ''){
-//     connection.query(query_no_title, function(err, data){
-//       if(err){
-//         console.log(err);
-//         res.json({});
-//       } else if(data.length == 0){ // no match
-//         res.json([]);
-//       } else{
-//         // console.log(data);
-//         res.json(data);
-//       }
-//     })
-//   } else { // if title
-//     connection.query(query_title, function(err, data){
-//       if(err){
-//         console.log(err);
-//         res.json({});
-//       }else if(data.length == 0){ // no match
-//         res.json([]);
-//       }else{
-//         console.log(data);
-//         res.json(data);
-//       }
-//     })
-//   }
-}
 
 // Route 16: GET /search_won 
 // return a list of movie with specific language/country/year etc and won any Oscar awards
@@ -563,25 +500,21 @@ const search_won= async function(req, res) {
   const year= req.query.year ?? -1;
   
   var query_no_year = `
-  SELECT M.imdb_title_id, M.title, M.country, M.year, M.genre, M.avg_vote
+  SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category, O.winner,O.name
   FROM movie_data M
-  WHERE M.imdb_title_id 
-  IN 
-  (SELECT O.imdb_title_id
-  FROM oscar O
-  WHERE O.winner = 1);
+  JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
+  order by O.year_ceremony, O.category;
   `;
-
+ // WHERE O.winner = 1
   var query = `
-  SELECT M.imdb_title_id, M.title, M.country, M.year, M.genre, M.avg_vote
+  SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category,O.winner,O.name
   FROM movie_data M
-  WHERE M.year = ${year}  
-  and M.imdb_title_id 
-  IN 
-  (SELECT O.imdb_title_id
-  FROM oscar O
-  WHERE O.winner = 1);
+  JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
+  WHERE (O.year_ceremony = ${year} OR ${year} IS NULL)
+  order by O.year_ceremony, O.category;  
   `;
+  //
+    // AND O.winner = 1
     if(year === -1){
     connection.query(query_no_year, function(err, data){
       if(err){
@@ -602,13 +535,12 @@ const search_won= async function(req, res) {
       }else if(data.length == 0){ // no match
         res.json([]);
       }else{
-        console.log(data);
+        // console.log(data);
         res.json(data);
       }
     })
   }
 }
-
 // const year= req.query.year ?? 1990;
 //   const country = req.query.country ?? '';
 
@@ -788,38 +720,6 @@ const movie_count = async function(req, res) {
    } 
 }
 
-
-
-
-/************************
- * ADVANCED INFO ROUTES *
- ************************/
-// Route 4: GET /top20_movies
-// const top20_movies = async function(req, res) {
-//   // const page = parseInt(req.query.page) || 1;
-//   // const pageSize = parseInt(req.query.page_size) || 20;
-//   // const offset = (page - 1) * pageSize;
-//   const genre = req.query.genre ?? '';
-
-//   var query = `
-//     SELECT *
-//     FROM movie_data
-//     WHERE genre LIKE '%${genre}%'
-//     ORDER BY avg_vote DESC
-//     LIMIT 20;
-//   `;
-//   connection.query(query, (err, data) => {
-//     if (err || data.length === 0) {
-//       console.log(err);
-//       res.json({}); 
-//     } else {
-//       res.json(data);
-//     }
-//   });
-// }
-
-
-
 module.exports = {
   movie,
   movies,
@@ -838,7 +738,7 @@ module.exports = {
   recent10genre,
   top10language,
   search_oscar_people,
-  search_oscar_filter,
+  //search_oscar_filter,
   top_oscar_director,
   search_won,
   oscar_decade,
