@@ -72,6 +72,7 @@ export default function MovieInfoPage() {
               <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '20px', marginTop: '0px' }}>
                 {`${(movieData.avg_vote / 2).toFixed(1)}`}
               </Typography>
+
             </Box>
 
             <Typography variant="body2" color="text.primary" sx={{ fontSize: 20 }}>

@@ -39,7 +39,7 @@ const author = async function (req, res) {
 /********************************
  *  MOVIES ROUTES *
  ********************************/
-// Route 1: GET /movies
+// Route 2: GET /movies
 const movies = async function (req, res) {
   var query = `
     SELECT title, avg_vote, poster_url,imdb_title_id
@@ -56,7 +56,7 @@ const movies = async function (req, res) {
   });
 }
 
-// Route 2: GET /movies/:movie_id
+// Route 3: GET /movies/:movie_id
 const movie = async function (req, res) {
   const movie_id = req.params.movie_id;
   connection.query(`
@@ -72,7 +72,7 @@ const movie = async function (req, res) {
   });
 }
 
-// Route 3: GET /search_movies
+// Route 4: GET /search_movies
 // return a list of movies that 
 const search_movies = async function (req, res) {
   const title = req.query.title ?? '';
@@ -117,7 +117,7 @@ const search_movies = async function (req, res) {
   });
 }
 
-// Route 4: GET /movie_people/:movie_id
+// Route 5: GET /movie_people/:movie_id
 const movie_people = async (req, res) => {
   const movie_id = req.params.movie_id;
   var query = `
@@ -139,7 +139,7 @@ const movie_people = async (req, res) => {
 /************************
  * HOMEPAGE ROUTES *
  ************************/
-// Route 5: GET /oscar_recommend
+// Route 6: GET /oscar_recommend
 //Homepage: recommend an oscar winning movie to the user
 const oscarMovieRecommended = async function (req, res) {
   var query = `
@@ -193,7 +193,7 @@ const oscarMovieRecommended = async function (req, res) {
   });
 }
 
-// Route 6: GET /recent10genre/:genre
+// Route 7: GET /recent10genre/:genre
 const recentgenre = async function (req, res) {
   // Most of the code is already written for you, you just need to fill in the query
   const genre = req.params.genre;
@@ -218,7 +218,7 @@ const recentgenre = async function (req, res) {
   });
 }
 
-// Route 7: GET /toplanguage/:language
+// Route 8: GET /toplanguage/:language
 const toplanguage = async function (req, res) {
   // Most of the code is already written for you, you just need to fill in the query
   const language = req.params.language;
@@ -248,7 +248,7 @@ const toplanguage = async function (req, res) {
  * PEOPLE ROUTES *
  ************************/
 
-// Route 8: GET /people  // only show actors with photo poster 
+// Route 9: GET /people  // only show actors with photo poster 
 const people = async function (req, res) {
   const page = parseInt(req.query.page) || 1;
   // const pageSize = parseInt(req.query.page_size) || 100;
@@ -272,7 +272,7 @@ ORDER BY movies_actedIn DESC;
   });
 }
 
-// Route 9: GET /people/:person_id
+// Route 10: GET /people/:person_id
 const person = async function (req, res) {
   const person_id = req.params.person_id;
   connection.query(`
@@ -288,32 +288,9 @@ const person = async function (req, res) {
     }
   });
 }
+              
 
-//route Route 10: GET /movie_people_acted/:person_id
-// const movie_people_acted = async (req, res) => {
-//   const person_id = req.params.person_id;
-
-//   var query = `
-//   SELECT M.title, M.poster_url
-//   FROM movie_people MP join movie_data M on  M.imdb_title_id = MP.imdb_title_id 
-//        join people P on MP.imdb_name_id = P.imdb_name_id 
-//   WHERE P.imdb_name_id = '${person_id}' and M.avg_vote > 7
-//   order by title ASC
-//   limit 20;
-//   `;
-//   connection.query(query, (err, data) => {
-//     if (err || data.length === 0) {
-//       console.log(err);
-//       res.json({});
-//     } else {
-//       res.json(data);
-//     }
-//   });
-// }
-
-// Route 11: GET /search_people
-
-// route Route 4: GET /movie_people_acted/:person_id
+// Route 11: GET /movie_people_acted/:person_id
 const movie_people_acted = async (req, res) => {
   const person_id = req.params.person_id;
   // const page = parseInt(req.params.page) || 1;
@@ -337,7 +314,7 @@ const movie_people_acted = async (req, res) => {
 });
 }
 
-
+// Route 12: GET /search_people
 const search_people = async function (req, res) {
   const name = req.query.name ?? '';
 
@@ -358,7 +335,7 @@ const search_people = async function (req, res) {
   });
 }
 
-// Route 12: GET /avg_vote_person/:person_id
+// Route 13: GET /avg_vote_person/:person_id
 //Average Vote (multiple tables): return the averge vote of the given actor's movies.
 const avg_vote_person = async function (req, res) {
   const person_id = req.params.person_id;
@@ -380,7 +357,7 @@ const avg_vote_person = async function (req, res) {
   });
 };
 
-//Route 13: GET/related_actors/:id
+//Route 14: GET/related_actors/:id
 const related_actors = async function (req, res) {
   const person_id = req.params.id
   const page = parseInt(req.query.page) || 1;
@@ -459,7 +436,7 @@ const related_actors = async function (req, res) {
     });
 };
 
-// Route 14: GET /top10_rated_oscar_movies
+// Route 15: GET /top10_rated_oscar_movies
 const top10_rated_oscar_movies = async function (req, res) {
   // const page = parseInt(req.query.page) || 1;
   // const pageSize = parseInt(req.query.page_size) || 20;
@@ -486,7 +463,7 @@ const top10_rated_oscar_movies = async function (req, res) {
  * OSCAR ROUTES *
  ************************/
 
-// Route 15: all actresses in the best picture nominated movies
+// Route 16: all actresses in the best picture nominated movies
 // 演员页  app.get('/oscar', routes.search_oscar_people)
 const search_oscar_people = async function (req, res) {
   const page = parseInt(req.query.page) || 1;
@@ -511,7 +488,7 @@ const search_oscar_people = async function (req, res) {
   });
 };
 
-// Route 16: GET / search_oscar_filter
+// Route 17: GET / search_oscar_filter
 // 奥斯卡页主体
 const search_oscar_filter = async function (req, res) {
 
@@ -574,55 +551,7 @@ const search_oscar_filter = async function (req, res) {
   }
 }
 
-// Route 17: GET /search_won 
-// return a list of movie with specific language/country/year etc and won any Oscar awards
-// const search_won = async function (req, res) {
-//   // const page = parseInt(req.query.page) || 1;
-//   // const pageSize = parseInt(req.query.page_size) || 20;
-//   // const offset = (page - 1) * pageSize;
-//   const duration = req.query.duration_low ?? 60;
-//   const language = req.query.language ?? -1;
-//   var query_no_year = `
-//   SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category, O.winner,O.name
-//   FROM movie_data M
-//   JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
-//   order by O.year_ceremony, O.category;
-//   `;
-//   // WHERE O.winner = 1
-//   var query = `
-//   SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category,O.winner,O.name
-//   FROM movie_data M
-//   JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
-//   WHERE (${year} IS NULL OR O.year_ceremony = ${year})
-//   order by O.year_ceremony, O.category;  
-//   `;
-//   if (year === -1) {
-//     connection.query(query_no_year, function (err, data) {
-//       if (err) {
-//         console.log(err);
-//         res.json({});
-//       } else if (data.length == 0) { // no match
-//         res.json([]);
-//       } else {
-//         // console.log(data);
-//         res.json(data);
-//       }
-//     })
-//   } else { // if title
-//     connection.query(query, function (err, data) {
-//       if (err) {
-//         console.log(err);
-//         res.json({});
-//       } else if (data.length == 0) { // no match
-//         res.json([]);
-//       } else {
-//         // console.log(data);
-//         res.json(data);
-//       }
-//     })
-//   }
-// }
-
+// Route 18: GET /search_won 
 const search_won= async function(req, res) {
   // const page = parseInt(req.query.page) || 1;
   // const pageSize = parseInt(req.query.page_size) || 20;
@@ -673,7 +602,7 @@ const search_won= async function(req, res) {
   }
 }
 
-// Route 18: GET /top_oscar_director
+// Route 19: GET /top_oscar_director
 // Find the top 10 directors who have directed the most movies
 // that were nominated for an Oscar, along with the number of nominations
 // their movies have received, and the number of movies they directed overall
@@ -732,7 +661,7 @@ ORDER BY
   });
 }
 
-// Route 19: 静态页面 /stats/oscar_decade
+// Route 20: 静态页面 /stats/oscar_decade
 const oscar_decade = async function (req, res) {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.page_size) || 20;
@@ -783,7 +712,7 @@ const oscar_decade = async function (req, res) {
   });
 };
 
-// Route 20: 静态页面 /stats/oscar_actress
+// Route 21: 静态页面 /stats/oscar_actress
 const oscar_actress = async function (req, res) {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.page_size) || 20;
@@ -835,7 +764,7 @@ const oscar_actress = async function (req, res) {
   });
 };
 
-// Route 21: GET /movie_count
+// Route 22: GET /movie_count
 // return a the total number of movies by selected criteria
 const movie_count = async function (req, res) {
   const country = req.query.country ?? '';
@@ -892,9 +821,7 @@ module.exports = {
   search_people,
   avg_vote_person,
   related_actors,
-  // search_oscar_winner,
   movie_people,
-  // top20_movies,
   top10_rated_oscar_movies,
   movie_count,
   oscarMovieRecommended,

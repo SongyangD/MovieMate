@@ -336,8 +336,12 @@ export default function MoviesPage() {
                 <Grid container spacing={1}>
                   <Grid item xs={12}>
                     <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                      <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
+                      {/* <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
                       <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
+                        {`${(movie.avg_vote / 2).toFixed(1)}`}
+                      </Typography> */}
+                      <Rating value={movie.avg_vote / 2 + 0} precision={0.25} max={5} readOnly />
+                      <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '20px', marginTop: '0px' }}>
                         {`${(movie.avg_vote / 2).toFixed(1)}`}
                       </Typography>
                     </div>

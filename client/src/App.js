@@ -39,6 +39,7 @@ export default function App() {
           <Route path="/people" element={<PeoplePage />} />
           <Route path="/people/:imdb_name_id" element={<PeopleInfoPage />} />
           <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/movies/:movie_id" element={<MoviesInfoPage />} />
           <Route path="/oscar" element={<OscarPage />} />
           <Route path="/stats" element={<Stats />} />
         </Routes>
