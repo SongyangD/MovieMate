@@ -32,78 +32,65 @@ function ActressesTable(props) {
 
     return (
         <TableContainer>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
-                        <TableCell align="left"><div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <div>Max Age at Oscar Noms</div>
-                            <div>Max Age for Acting in Movies</div>
-                            <div>Average Age for Acting in Movies</div>
-
-                        </div></TableCell>
-                        <TableCell align="left">Average Oscar Movie Rating</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {data.map((actress) => (
-                        <TableRow key={actress.imdb_name_id}>
-                            <TableCell>
-                                <Tooltip title={
-                                    <React.Fragment>
-                                        <div>Oscar Movie Participation: {actress.oscar_freq}</div>
-                                        <div>Total Movies Participation: {actress.total_movies}</div>
-                                    </React.Fragment>
-                                }>
-                                    <Avatar alt={actress.name} src={actress.photo_url} sx={{ width: 66, height: 66 }} />
-                                </Tooltip>
-                            </TableCell>
-                            <TableCell>
-                                <Link to={`/people/${actress.imdb_name_id}`}>
-                                    {actress.name}
-                                </Link>
-                            </TableCell>
-                            <TableCell align="left" style={{ display: 'flex', flexDirection: 'column' }}>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <div style={{ backgroundColor: '#9fa8da', height: 10, flexGrow: 1, marginRight: 5 }}>
-                                        <div style={{ backgroundColor: '#5c6bc0', height: 10, width: `${(actress.max_oscar_age / 100) * 100}%` }}></div>
-                                    </div>
-                                    <span style={{ minWidth: 40 }}>{actress.max_oscar_age}</span>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <div style={{ backgroundColor: '#9fa8da', height: 10, flexGrow: 1, marginRight: 5 }}>
-                                        <div style={{ backgroundColor: '#3f51b5', height: 10, width: `${(actress.max_age / 100) * 100}%` }}></div>
-                                    </div>
-                                    <span style={{ minWidth: 40 }}>{actress.max_age}</span>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <div style={{ backgroundColor: '#9fa8da', height: 10, flexGrow: 1, marginRight: 5 }}>
-                                        <div style={{ backgroundColor: '#283593', height: 10, width: `${(actress.average_age / 100) * 100}%` }}></div>
-                                    </div>
-                                    <span style={{ minWidth: 40 }}>{actress.average_age}</span>
-                                </div>
-                            </TableCell>
-                            <TableCell align="left">
-                                <div style={{ display: "flex", alignItems: "center" }}>
-                                    <Rating value={actress.avg_rating / 2 + 0} precision={0.25} max={5} readOnly />
-                                    <span style={{ marginLeft: "5px" }}>{actress.avg_rating.toFixed(1)}</span>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-                <TablePagination
-                    rowsPerPageOptions={rowsPerPageOptions ?? [5, 10, 25]}
-                    count={-1}
-                    rowsPerPage={pageSize}
-                    page={page - 1}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangePageSize}
-                />
-            </Table>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell></TableCell>
+                <TableCell></TableCell>
+                {/* <TableCell align="left">Oscar Movie Participation</TableCell>
+                <TableCell align="left">Total Movies Participation</TableCell> */}
+                <TableCell align="left">Maximum Age at Oscar Nomination</TableCell>
+                <TableCell align="left">Maximum Age for Acting in Movies</TableCell>
+                <TableCell align="left">Average Age for Acting in Movies</TableCell>
+                <TableCell align="left">Average Ratings of Oscar Movies</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.map((actress) => (
+                <TableRow key={actress.imdb_name_id}>
+    
+                  <TableCell>
+                  <Tooltip title={
+                    <React.Fragment>
+                        <div>Oscar Movie Participation: {actress.oscar_freq}</div>
+                        <div>Total Movies Participation: {actress.total_movies}</div>
+                    </React.Fragment>
+                    }>
+                <Avatar alt={actress.name} src={actress.photo_url} sx={{ width: 66, height: 66 }} />
+                </Tooltip>
+    
+                  </TableCell>
+    
+                  <TableCell>
+                    <Link to={`/people/${actress.imdb_name_id}`}>
+                      {actress.name}
+                    </Link>
+                  </TableCell>
+                  {/* <TableCell align="center">{actress.oscar_freq}</TableCell>
+                  <TableCell align="center">{actress.total_movies}</TableCell> */}
+                  <TableCell align="center">{actress.max_oscar_age}</TableCell>
+                  <TableCell align="center">{actress.max_age}</TableCell>
+                  <TableCell align="center">{actress.average_age}</TableCell>
+                  <TableCell align="left">
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <Rating value={actress.avg_rating / 2 + 0} precision={0.25} max={5} readOnly />
+                    <span style={{ marginLeft: "5px" }}>{actress.avg_rating.toFixed(1)}</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TablePagination
+              rowsPerPageOptions={rowsPerPageOptions ?? [5, 10, 25]}
+              count={-1}
+              rowsPerPage={pageSize}
+              page={page - 1}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangePageSize}
+            />
+          </Table>
         </TableContainer>
-    );
+      );
 }
 
 export default ActressesTable;
