@@ -12,18 +12,16 @@ const styles = {
     alignItems: 'center',
     width: '100%',
     margin: '0 auto',
-    // border: '1px solid #3f51b5',
   },
   cardMedia: {
-    width: 300, // set a fixed width
-    height: 450, // set a fixed height
+    width: 300, 
+    height: 450, 
     flex: '0 0 200px',
   },
   cardContent: {
     flex: '1 1 auto',
     margin: '0 16px',
     minWidth: 0,
-    // fontSize: '2rem',
   },
 };
 
@@ -70,10 +68,6 @@ export default function MediaCard() {
             {oscarMovieOfTheDay.description}
           </Typography>
         </CardContent>
-        {/* <CardActions>
-        <Button size="small">Share</Button>
-        <Button size="small">Learn More</Button>
-      </CardActions> */}
       </Card>
     </div>
   );
