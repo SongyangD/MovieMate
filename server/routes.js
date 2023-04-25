@@ -203,9 +203,6 @@ const recentgenre = async function (req, res) {
   SELECT title, poster_url, description, imdb_title_id
     FROM movie_data
     WHERE genre Like '%${genre}%'
-    AND title IS NOT NULL
-    AND poster_url IS NOT NULL
-    AND description IS NOT NULL
     Order by year DESC, votes DESC
     LIMIT 50
   `
@@ -229,9 +226,6 @@ const toplanguage = async function (req, res) {
   SELECT title, poster_url, description, imdb_title_id
     FROM movie_data
     WHERE language Like '%${language}%'
-    AND title IS NOT NULL
-    AND poster_url IS NOT NULL
-    AND description IS NOT NULL
     Order by avg_vote DESC
     LIMIT 50
   `
@@ -584,43 +578,55 @@ const top_oscar_director = async function (req, res) {
   p.name,
   p.imdb_name_id,
   p.photo_url,
-  COUNT(DISTINCT CASE 
-    WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') 
-    THEN o.imdb_title_id ELSE NULL END) AS num_picture_nominations,
-  COUNT(DISTINCT CASE 
-    WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') AND o.winner = 1 
-    THEN o.imdb_title_id ELSE NULL END) AS num_picture_wins,
-  COUNT(DISTINCT CASE 
-    WHEN o.category = 'DIRECTING' 
-    THEN o.imdb_title_id ELSE NULL END) AS num_direction_nominations,
-  COUNT(DISTINCT CASE 
-    WHEN o.category = 'DIRECTING' AND o.winner = 1 
-    THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins,
-    ROUND(AVG(m.avg_vote),1) AS avg_rating
+  IFNULL(num_picture_nominations, 0) AS num_picture_nominations,
+  IFNULL(num_picture_wins, 0) AS num_picture_wins,
+  IFNULL(num_direction_nominations, 0) AS num_direction_nominations,
+  IFNULL(num_direction_wins, 0) AS num_direction_wins,
+  ROUND(IFNULL(m.avg_vote, 0), 1) AS avg_rating
 FROM
-  oscar o
-  JOIN movie_people mp ON o.imdb_title_id = mp.imdb_title_id
-  JOIN people p ON mp.imdb_name_id = p.imdb_name_id
-  LEFT JOIN (
+  (
     SELECT
-      p.imdb_name_id,
-      AVG(m.avg_vote) AS avg_vote
+      mp.imdb_name_id,
+      COUNT(DISTINCT CASE 
+        WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') 
+        THEN o.imdb_title_id ELSE NULL END) AS num_picture_nominations,
+      COUNT(DISTINCT CASE 
+        WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') AND o.winner = 1 
+        THEN o.imdb_title_id ELSE NULL END) AS num_picture_wins,
+      COUNT(DISTINCT CASE 
+        WHEN o.category = 'DIRECTING' 
+        THEN o.imdb_title_id ELSE NULL END) AS num_direction_nominations,
+      COUNT(DISTINCT CASE 
+        WHEN o.category = 'DIRECTING' AND o.winner = 1 
+        THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins
     FROM
-      movie_people mp
-      JOIN movie_data m ON mp.imdb_title_id = m.imdb_title_id
-      JOIN people p ON mp.imdb_name_id = p.imdb_name_id
+      oscar o
+      JOIN movie_people mp ON o.imdb_title_id = mp.imdb_title_id
     WHERE
       mp.category = 'director'
     GROUP BY
-      p.imdb_name_id
-  ) m ON p.imdb_name_id = m.imdb_name_id
-WHERE
-  mp.category = 'director'
-GROUP BY
-  p.imdb_name_id, p.name, p.photo_url
+      mp.imdb_name_id
+  ) AS oscar_data
+  JOIN people p ON oscar_data.imdb_name_id = p.imdb_name_id
+  LEFT JOIN (
+    SELECT
+      mp.imdb_name_id,
+      AVG(m.avg_vote) AS avg_vote
+    FROM
+      movie_data m
+      JOIN movie_people mp ON m.imdb_title_id = mp.imdb_title_id
+    WHERE
+      mp.category = 'director'
+    GROUP BY
+      mp.imdb_name_id
+  ) AS m ON oscar_data.imdb_name_id = m.imdb_name_id
 ORDER BY
-  num_direction_wins DESC, num_direction_nominations DESC, num_picture_wins DESC, num_picture_nominations DESC, avg_rating DESC
-  LIMIT 10;
+  num_direction_wins DESC,
+  num_direction_nominations DESC,
+  num_picture_wins DESC,
+  num_picture_nominations DESC,
+  avg_rating DESC
+LIMIT 10;
   `;
   // SELECT m.director, COUNT(*) AS num_nominations, COUNT(DISTINCT m.imdb_title_id) AS num_movies
   // FROM movie_data m
@@ -746,35 +752,38 @@ const oscar_actress = async function (req, res) {
   WITH oscar_movies AS (
     SELECT DISTINCT imdb_title_id, year_ceremony
     FROM oscar
-  ),movie_counts AS (
+),movie_counts AS (
     SELECT imdb_name_id, COUNT(DISTINCT imdb_title_id) AS total_movies
     FROM movie_people
+    WHERE category = 'actress'
     GROUP BY imdb_name_id
-  ),movie_ages AS (
+),movie_ages AS (
     SELECT mp.imdb_name_id,
+           p.name,
+           p.photo_url,
+           p.date_of_birth,
            MAX(m.year - YEAR(p.date_of_birth)) AS max_age,
            ROUND(AVG(m.year - YEAR(p.date_of_birth))) AS average_age
     FROM movie_people mp
-    JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
-    JOIN people p ON p.imdb_name_id = mp.imdb_name_id
+             JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
+             JOIN people p ON p.imdb_name_id = mp.imdb_name_id
     WHERE mp.category = 'actress'
-    GROUP BY mp.imdb_name_id
-  )
-  SELECT mp.imdb_name_id, p.name, mc.total_movies, p.photo_url,
-         COUNT(*) AS oscar_freq,
-         ROUND(MAX(om.year_ceremony - YEAR(p.date_of_birth))) AS max_oscar_age,
-         ROUND(AVG(m.avg_vote),1) AS avg_rating,
-         ma.max_age,
-         ma.average_age
-         FROM movie_people mp
+    GROUP BY mp.imdb_name_id,p.name,p.photo_url
+)
+SELECT mp.imdb_name_id, ma.name, mc.total_movies, ma.photo_url,
+       COUNT(*) AS oscar_freq,
+       ROUND(MAX(om.year_ceremony - YEAR(ma.date_of_birth))) AS max_oscar_age,
+       ROUND(AVG(m.avg_vote),1) AS avg_rating,
+       ma.max_age,
+       ma.average_age
+FROM movie_people mp
          JOIN oscar_movies om ON om.imdb_title_id = mp.imdb_title_id
-         JOIN people p ON p.imdb_name_id = mp.imdb_name_id
          JOIN movie_counts mc ON mc.imdb_name_id = mp.imdb_name_id
          JOIN movie_ages ma ON ma.imdb_name_id = mp.imdb_name_id
          JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
-         WHERE mp.category = 'actress'
-         GROUP BY mp.imdb_name_id, p.name, ma.max_age,ma.average_age
-  ORDER BY AVG(om.year_ceremony - YEAR(p.date_of_birth)) DESC  
+WHERE mp.category = 'actress'
+GROUP BY mp.imdb_name_id, ma.name, ma.max_age,ma.average_age
+ORDER BY AVG(om.year_ceremony - YEAR(ma.date_of_birth)) DESC
   LIMIT ${offset}, ${pageSize};
   `;
 
