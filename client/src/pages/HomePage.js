@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Container, Divider, Box } from '@mui/material';
-// import { NavLink } from 'react-router-dom';
 import MediaCard from '../components/RandomMovieCard';
 import TopTabs from '../components/TopMovieCard'
-
+import { NoSsr } from '@mui/material';
 const config = require('../config.json');
 
 export default function HomePage() {
 
-  const [appAuthor, setAppAuthor] = useState("");
+const [appAuthor, setAppAuthor] = useState("");
 
   useEffect(() => {
-
     fetch(`http://${config.server_host}:${config.server_port}/author/name`)
       .then(res => res.text())
       .then(resText => setAppAuthor(resText));
@@ -57,31 +55,21 @@ export default function HomePage() {
     "Portuguese"
   ];
 
+
   return (
     <Container>
-
-      {/* <div>
-        <h1>MovieEase</h1>
-        <h2> ola</h2>
-        <p>Welcome</p>
-      </div> */}
       <Box>
         <Divider>
           <h1 style={{ color: "grey", float: "right" }}>MovieEase</h1>
         </Divider>
       </Box>
       <h1 style={{ textAlign: 'center' }}>Oscar Movie of the Day       </h1>
-      {/* <h2>Check out your Oscar Nominated Movie of the day:&nbsp;
-         <Link onClick={() => setSelectedMovieId(oscarMovieOfTheDay.imdb_title_id)}>{oscarMovieOfTheDay.title}</Link> 
-      </h2> */}
-      <MediaCard></MediaCard>
+      <NoSsr>
+        <MediaCard />
+      </NoSsr>
       <Divider />
       <h1 style={{ textAlign: 'center' }}>Genre</h1>
-      {/* <Button variant="outlined" href="#outlined-buttons">
-        Disabled
-      </Button> */}
       <Box>
-        {/* <GenreTabs></GenreTabs> */}
         <TopTabs
           tabList={genreList}
           fetchUrl={'recentgenre'}
@@ -89,12 +77,9 @@ export default function HomePage() {
           tabType={'Genre'}
         />
       </Box>
-      {/* <LazyTable route={`http://${config.server_host}:${config.server_port}/top_songs`} columns={songColumns} /> */}
       <Divider />
       <h1 style={{ textAlign: 'center' }}>Language</h1>
       <Box>
-        {/* <LanguageTabs></LanguageTabs> */}
-
         <TopTabs
           tabList={languageList}
           fetchUrl={'toplanguage'}

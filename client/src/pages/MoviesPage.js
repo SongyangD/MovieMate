@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import { Box, TextField, Checkbox, Container, MenuItem, Button, Slider, FormControlLabel, Typography } from '@mui/material';
 import Rating from '@mui/material/Rating';
@@ -335,11 +334,7 @@ export default function MoviesPage() {
                 </Typography>
                 <Grid container spacing={1}>
                   <Grid item xs={12}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                      {/* <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
-                      <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
-                        {`${(movie.avg_vote / 2).toFixed(1)}`}
-                      </Typography> */}
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                       <Rating value={movie.avg_vote / 2 + 0} precision={0.25} max={5} readOnly />
                       <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '20px', marginTop: '0px' }}>
                         {`${(movie.avg_vote / 2).toFixed(1)}`}
@@ -351,31 +346,6 @@ export default function MoviesPage() {
             </Card>
           ))}
         </Box>
-        // <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
-        //   {currentMovies.map(movie => (
-        //     <Box key={movie.id} sx={{ width: 'calc(20% - 10px)', minWidth: '150px' }}>
-        // <NavLink to={`/movies/${movie.imdb_title_id}`}>
-        //   <img src={movie.poster_url ? movie.poster_url : defaultImage} alt={movie.title} style={{ height: '300px', width: '210px' }} />
-        // </NavLink>
-        //       {/* movie title and rating starts */}
-        //       <Grid container spacing={1}>
-        //         <Grid item xs={12}>
-        //           <Typography variant="body1" sx={{ fontSize: '14px', marginBottom: '0px' }}>
-        //             {movie.title}
-        //           </Typography>
-        //         </Grid>
-        //         <Grid item xs={12}>
-        //           <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-        //             <Rating name="read-only" value={movie.avg_vote / 2} readOnly />
-        //             <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '15px', marginTop: '0px' }}>
-        //               {`${(movie.avg_vote / 2).toFixed(1)}`}
-        //             </Typography>
-        //           </div>
-        //         </Grid>
-        //       </Grid>
-        //     </Box>
-        //   ))}
-        // </Box>
       ) : (
         !moviesLoaded ? <Box sx={{ fontSize: 24 }}>Loading movies...</Box> :
           <Box sx={{ fontSize: 24 }}>No movies found</Box>

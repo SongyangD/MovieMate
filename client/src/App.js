@@ -5,9 +5,6 @@ import { createTheme } from "@mui/material/styles";
 
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
-import AlbumsPage from './pages/AlbumsPage';
-import SongsPage from './pages/SongsPage';
-import AlbumInfoPage from './pages/AlbumInfoPage'
 import MoviesPage from './pages/MoviesPage';
 import MoviesInfoPage from "./pages/MoviesInfoPage";
 import Stats from "./pages/Stats";

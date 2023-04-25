@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Box, Button, ButtonGroup, Link, Modal } from '@mui/material';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { NavLink } from 'react-router-dom';
-
 import { formatDuration } from '../helpers/formatter';
+import defaultImage from '../images/i6.jpg';
 const config = require('../config.json');
 
 export default function PeopleCard(props) {
@@ -13,7 +13,7 @@ export default function PeopleCard(props) {
     <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '16px', border: '30px solid #ccc', 
     borderRadius: '8px', padding: '8px' }}>
     <img
-      src={photo_url}
+      src={photo_url ? photo_url : defaultImage}
       alt={`${name}}`}
       style={{ width: '300px', height: 'auto', marginRight: '16px', borderRadius: '4px' }}
     />

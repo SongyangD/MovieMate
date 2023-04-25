@@ -22,7 +22,7 @@ export default function TopTabs(props) {
                 setResults(resJson);
                 setCurrentPage(1);
             });
-    }, [activeTab]);
+    }, [activeTab, fetchUrl]);
 
     useEffect(() => {
         const startIndex = (currentPage - 1) * 10;
@@ -52,9 +52,9 @@ export default function TopTabs(props) {
     return (
         <Box sx={{ borderRadius: "0px 0px 25px 25px" }}>
             <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', padding: '10px' }}>
-                {tabList.slice(0, 10).map(tab => (
+                {displayedTabs.map((tab, index) => (
                     <Button
-                        key={tab}
+                        key={`displayedTab-${tab}`}
                         variant={activeTab === tab ? 'contained' : 'outlined'}
                         onClick={() => setActiveTab(tab)}
                     >
@@ -77,8 +77,8 @@ export default function TopTabs(props) {
                             open={Boolean(dropdownAnchorEl)}
                             onClose={handleDropdownClose}
                         >
-                            {remainingTabs.map(tab => (
-                                <MenuItem key={tab} onClick={() => handleDropdownItemClick(tab)}>
+                            {remainingTabs.map((tab, index) => (
+                                <MenuItem key={`remainingTab-${tab}`} onClick={() => handleDropdownItemClick(tab)}>
                                     {tab}
                                 </MenuItem>
                             ))}

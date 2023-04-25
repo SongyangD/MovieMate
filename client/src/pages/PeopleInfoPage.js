@@ -82,7 +82,7 @@ export default function PeopleInfoPage() {
               {moviesActedIn.map((movie) => (
                 <div key={movie.imdb_title_id}>
                   <NavLink to={`/movies/${movie.imdb_title_id}`}>
-                    <img src={movie.poster_url} alt={`${movie.title} poster`} style={{ width: '100%' }} />
+                    <img src={movie.poster_url} alt={`${movie.title} poster`} style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
                   </NavLink>
                 </div>
               ))}
@@ -99,15 +99,6 @@ export default function PeopleInfoPage() {
               <Typography variant="subtitle1" sx={{ mt: 1 }}>{person.name}</Typography>
             </div>
           ))}
-{/* 
-          {relatedActors.map(person => (
-            <div key={person.name} style={{ marginRight: 50 }}>
-              <NavLink to={`/people/${person.id}`} exact>
-                <Avatar alt={person.name} src={person.photo_url} sx={{ width: 100, height: 100 }} />
-              </NavLink>
-              <Typography variant="subtitle1" sx={{ mt: 1 }}>{person.name}</Typography>
-            </div>
-          ))} */}
         </div>
       </div>
     </Container>

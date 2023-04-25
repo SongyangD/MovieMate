@@ -66,18 +66,9 @@ function DirectorsTable(props) {
                                 }
                             </TableCell>
                             <TableCell align="left">
-                                {/* <div>
-                {Array.from(Array(Math.min(Math.round(director.avg_rating/2), 5)), (_, index) => (
-                    <Star key={index} fontSize="small" htmlColor="#FFD700" />
-                ))}
-                {Array.from(Array(Math.min(Math.round(5 - director.avg_rating/2), 5)), (_, index) => (
-                    <StarBorder key={index} fontSize="small" htmlColor="#FFD700" />
-                ))}
-                <span style={{ marginLeft: "5px" }}>{director.avg_rating.toFixed(1)}</span>
-                </div> */}
                                 <div style={{ display: "flex", alignItems: "center" }}>
                                     <Rating value={director.avg_rating / 2 + 0} precision={0.25} max={5} readOnly />
-                                    <span style={{ marginLeft: "5px" }}>{director.avg_rating.toFixed(1)}</span>
+                                    <span style={{ marginLeft: "5px" }}>{(director.avg_rating/2).toFixed(1)}</span>
                                 </div>
                             </TableCell>
                         </TableRow>

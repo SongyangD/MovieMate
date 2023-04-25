@@ -74,7 +74,7 @@ function ActressesTable(props) {
                   <TableCell align="left">
                     <div style={{ display: "flex", alignItems: "center" }}>
                     <Rating value={actress.avg_rating / 2 + 0} precision={0.25} max={5} readOnly />
-                    <span style={{ marginLeft: "5px" }}>{actress.avg_rating.toFixed(1)}</span>
+                    <span style={{ marginLeft: "5px" }}>{(actress.avg_rating/2).toFixed(1)}</span>
                     </div>
                   </TableCell>
                 </TableRow>
