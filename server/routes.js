@@ -288,7 +288,7 @@ const person = async function (req, res) {
     }
   });
 }
-              
+
 
 // Route 11: GET /movie_people_acted/:person_id
 const movie_people_acted = async (req, res) => {
@@ -299,19 +299,19 @@ const movie_people_acted = async (req, res) => {
   var query = `
   SELECT M.title, M.poster_url, M.imdb_title_id
   FROM movie_people MP join movie_data M on  M.imdb_title_id = MP.imdb_title_id 
-       join people P on MP.imdb_name_id = P.imdb_name_id 
-  WHERE P.imdb_name_id = '${person_id}' and M.avg_vote > 7
-  order by title ASC
+      
+  WHERE MP.imdb_name_id = '${person_id}' and M.avg_vote > 7
+  order by M.avg_vote DESC
   limit 20;
   `;
   connection.query(query, (err, data) => {
-  if (err || data.length === 0) {
-    console.log(err);
-    res.json({}); 
-  } else {
-    res.json(data);
-  }
-});
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
 }
 
 // Route 12: GET /search_people
@@ -335,6 +335,7 @@ const search_people = async function (req, res) {
   });
 }
 
+
 // Route 13: GET /avg_vote_person/:person_id
 //Average Vote (multiple tables): return the averge vote of the given actor's movies.
 const avg_vote_person = async function (req, res) {
@@ -342,10 +343,8 @@ const avg_vote_person = async function (req, res) {
 
   var query = `
   SELECT round(AVG(M.avg_vote),2) as avg_rating
-  FROM movie_data M, movie_people MP, people P
-  WHERE M.imdb_title_id = MP.imdb_title_id 
-  AND MP.imdb_name_id = P.imdb_name_id 
-  AND P.imdb_name_id = '${person_id}';
+  FROM movie_data M join  movie_people MP on M.imdb_title_id = MP.imdb_title_id 
+  WHERE  MP.imdb_name_id = '${person_id}';
   `
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
@@ -436,59 +435,13 @@ const related_actors = async function (req, res) {
     });
 };
 
-// Route 15: GET /top10_rated_oscar_movies
-const top10_rated_oscar_movies = async function (req, res) {
-  // const page = parseInt(req.query.page) || 1;
-  // const pageSize = parseInt(req.query.page_size) || 20;
-  // const offset = (page - 1) * pageSize;
-  var query = `
-  SELECT  *
-  FROM movie_data
-  WHERE Oscar_nominated = True
-  Order by avg_vote DESC
-  limit 10;
-  `;
-  connection.query(query, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({});
-    } else {
-      res.json(data);
-    }
-  });
-};
 
 
 /************************
  * OSCAR ROUTES *
  ************************/
 
-// Route 16: all actresses in the best picture nominated movies
-// 演员页  app.get('/oscar', routes.search_oscar_people)
-const search_oscar_people = async function (req, res) {
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.page_size) || 20;
-  const offset = (page - 1) * pageSize;
-
-  var query1 = `
-    SELECT *
-    FROM people P, oscar O, movie_people MP
-    WHERE O.category = "BEST PICTURE" and O.imdb_title_id = MP.imdb_title_id and MP.imdb_name_id = P.imdb_name_id
-    ORDER BY P.name ASC
-    LIMIT ${offset}, ${pageSize};
-  `;
-
-  connection.query(query1, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({});
-    } else {
-      res.json(data);
-    }
-  });
-};
-
-// Route 17: GET / search_oscar_filter
+// Route 15: GET / search_oscar_filter
 // 奥斯卡页主体
 const search_oscar_filter = async function (req, res) {
 
@@ -551,21 +504,21 @@ const search_oscar_filter = async function (req, res) {
   }
 }
 
-// Route 18: GET /search_won 
-const search_won= async function(req, res) {
+// Route 16: GET /search_won 
+const search_won = async function (req, res) {
   // const page = parseInt(req.query.page) || 1;
   // const pageSize = parseInt(req.query.page_size) || 20;
   // const offset = (page - 1) * pageSize;
   // const duration= req.query.duration_low ?? 60;
-  const year= req.query.year ?? -1;
-  
+  const year = req.query.year ?? -1;
+
   var query_no_year = `
   SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category, O.winner,O.name
   FROM movie_data M
   JOIN oscar O ON M.imdb_title_id = O.imdb_title_id
   order by O.year_ceremony, O.category;
   `;
- // WHERE O.winner = 1
+  // WHERE O.winner = 1
   var query = `
   SELECT DISTINCT M.imdb_title_id, M.title, M.country, O.year_ceremony as year, M.genre, M.avg_vote, O.category,O.winner,O.name
   FROM movie_data M
@@ -574,27 +527,27 @@ const search_won= async function(req, res) {
   order by O.year_ceremony, O.category;  
   `;
   //
-    // AND O.winner = 1
-    if(year === -1){
-    connection.query(query_no_year, function(err, data){
-      if(err){
+  // AND O.winner = 1
+  if (year === -1) {
+    connection.query(query_no_year, function (err, data) {
+      if (err) {
         console.log(err);
         res.json({});
-      } else if(data.length == 0){ // no match
+      } else if (data.length == 0) { // no match
         res.json([]);
-      } else{
+      } else {
         // console.log(data);
         res.json(data);
       }
     })
   } else { // if title
-    connection.query(query, function(err, data){
-      if(err){
+    connection.query(query, function (err, data) {
+      if (err) {
         console.log(err);
         res.json({});
-      }else if(data.length == 0){ // no match
+      } else if (data.length == 0) { // no match
         res.json([]);
-      }else{
+      } else {
         // console.log(data);
         res.json(data);
       }
@@ -602,54 +555,65 @@ const search_won= async function(req, res) {
   }
 }
 
-// Route 19: GET /top_oscar_director
+// Route 17: GET /top_oscar_director
 // Find the top 10 directors who have directed the most movies
 // that were nominated for an Oscar, along with the number of nominations
 // their movies have received, and the number of movies they directed overall
 const top_oscar_director = async function (req, res) {
-
   var query = `
   SELECT
   p.name,
   p.imdb_name_id,
   p.photo_url,
-  COUNT(DISTINCT CASE 
-    WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') 
-    THEN o.imdb_title_id ELSE NULL END) AS num_picture_nominations,
-  COUNT(DISTINCT CASE 
-    WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') AND o.winner = 1 
-    THEN o.imdb_title_id ELSE NULL END) AS num_picture_wins,
-  COUNT(DISTINCT CASE 
-    WHEN o.category = 'DIRECTING' 
-    THEN o.imdb_title_id ELSE NULL END) AS num_direction_nominations,
-  COUNT(DISTINCT CASE 
-    WHEN o.category = 'DIRECTING' AND o.winner = 1 
-    THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins,
-    ROUND(AVG(m.avg_vote),1) AS avg_rating
+  IFNULL(num_picture_nominations, 0) AS num_picture_nominations,
+  IFNULL(num_picture_wins, 0) AS num_picture_wins,
+  IFNULL(num_direction_nominations, 0) AS num_direction_nominations,
+  IFNULL(num_direction_wins, 0) AS num_direction_wins,
+  ROUND(IFNULL(m.avg_vote, 0), 1) AS avg_rating
 FROM
-  oscar o
-  JOIN movie_people mp ON o.imdb_title_id = mp.imdb_title_id
-  JOIN people p ON mp.imdb_name_id = p.imdb_name_id
-  LEFT JOIN (
+  (
     SELECT
-      p.imdb_name_id,
-      AVG(m.avg_vote) AS avg_vote
+      mp.imdb_name_id,
+      COUNT(DISTINCT CASE 
+        WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') 
+        THEN o.imdb_title_id ELSE NULL END) AS num_picture_nominations,
+      COUNT(DISTINCT CASE 
+        WHEN o.category IN ('Outstanding Picture', 'Outstanding Production', 'Outstanding Motion Picture', 'Best Motion Picture', 'Best Picture') AND o.winner = 1 
+        THEN o.imdb_title_id ELSE NULL END) AS num_picture_wins,
+      COUNT(DISTINCT CASE 
+        WHEN o.category = 'DIRECTING' 
+        THEN o.imdb_title_id ELSE NULL END) AS num_direction_nominations,
+      COUNT(DISTINCT CASE 
+        WHEN o.category = 'DIRECTING' AND o.winner = 1 
+        THEN o.imdb_title_id ELSE NULL END) AS num_direction_wins
     FROM
-      movie_people mp
-      JOIN movie_data m ON mp.imdb_title_id = m.imdb_title_id
-      JOIN people p ON mp.imdb_name_id = p.imdb_name_id
+      oscar o
+      JOIN movie_people mp ON o.imdb_title_id = mp.imdb_title_id
     WHERE
       mp.category = 'director'
     GROUP BY
-      p.imdb_name_id
-  ) m ON p.imdb_name_id = m.imdb_name_id
-WHERE
-  mp.category = 'director'
-GROUP BY
-  p.imdb_name_id, p.name, p.photo_url
+      mp.imdb_name_id
+  ) AS oscar_data
+  JOIN people p ON oscar_data.imdb_name_id = p.imdb_name_id
+  LEFT JOIN (
+    SELECT
+      mp.imdb_name_id,
+      AVG(m.avg_vote) AS avg_vote
+    FROM
+      movie_data m
+      JOIN movie_people mp ON m.imdb_title_id = mp.imdb_title_id
+    WHERE
+      mp.category = 'director'
+    GROUP BY
+      mp.imdb_name_id
+  ) AS m ON oscar_data.imdb_name_id = m.imdb_name_id
 ORDER BY
-  num_direction_wins DESC, num_direction_nominations DESC, num_picture_wins DESC, num_picture_nominations DESC, avg_rating DESC
-  LIMIT 10;
+  num_direction_wins DESC,
+  num_direction_nominations DESC,
+  num_picture_wins DESC,
+  num_picture_nominations DESC,
+  avg_rating DESC
+LIMIT 10;
   `;
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
@@ -661,7 +625,7 @@ ORDER BY
   });
 }
 
-// Route 20: 静态页面 /stats/oscar_decade
+// Route 18: 静态页面 /stats/oscar_decade
 const oscar_decade = async function (req, res) {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.page_size) || 20;
@@ -712,48 +676,49 @@ const oscar_decade = async function (req, res) {
   });
 };
 
-// Route 21: 静态页面 /stats/oscar_actress
+// Route 19: 静态页面 /stats/oscar_actress
 const oscar_actress = async function (req, res) {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.page_size) || 20;
   const offset = (page - 1) * pageSize;
-
   var query = `
   WITH oscar_movies AS (
     SELECT DISTINCT imdb_title_id, year_ceremony
     FROM oscar
-  ),movie_counts AS (
+),movie_counts AS (
     SELECT imdb_name_id, COUNT(DISTINCT imdb_title_id) AS total_movies
     FROM movie_people
+    WHERE category = 'actress'
     GROUP BY imdb_name_id
-  ),movie_ages AS (
+),movie_ages AS (
     SELECT mp.imdb_name_id,
+           p.name,
+           p.photo_url,
+           p.date_of_birth,
            MAX(m.year - YEAR(p.date_of_birth)) AS max_age,
            ROUND(AVG(m.year - YEAR(p.date_of_birth))) AS average_age
     FROM movie_people mp
-    JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
-    JOIN people p ON p.imdb_name_id = mp.imdb_name_id
+             JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
+             JOIN people p ON p.imdb_name_id = mp.imdb_name_id
     WHERE mp.category = 'actress'
-    GROUP BY mp.imdb_name_id
-  )
-  SELECT mp.imdb_name_id, p.name, mc.total_movies, p.photo_url,
-         COUNT(*) AS oscar_freq,
-         ROUND(MAX(om.year_ceremony - YEAR(p.date_of_birth))) AS max_oscar_age,
-         ROUND(AVG(m.avg_vote),1) AS avg_rating,
-         ma.max_age,
-         ma.average_age
-         FROM movie_people mp
+    GROUP BY mp.imdb_name_id,p.name,p.photo_url
+)
+SELECT mp.imdb_name_id, ma.name, mc.total_movies, ma.photo_url,
+       COUNT(*) AS oscar_freq,
+       ROUND(MAX(om.year_ceremony - YEAR(ma.date_of_birth))) AS max_oscar_age,
+       ROUND(AVG(m.avg_vote),1) AS avg_rating,
+       ma.max_age,
+       ma.average_age
+FROM movie_people mp
          JOIN oscar_movies om ON om.imdb_title_id = mp.imdb_title_id
-         JOIN people p ON p.imdb_name_id = mp.imdb_name_id
          JOIN movie_counts mc ON mc.imdb_name_id = mp.imdb_name_id
          JOIN movie_ages ma ON ma.imdb_name_id = mp.imdb_name_id
          JOIN movie_data m ON m.imdb_title_id = mp.imdb_title_id
-         WHERE mp.category = 'actress'
-         GROUP BY mp.imdb_name_id, p.name, ma.max_age,ma.average_age
-  ORDER BY AVG(om.year_ceremony - YEAR(p.date_of_birth)) DESC  
+WHERE mp.category = 'actress'
+GROUP BY mp.imdb_name_id, ma.name, ma.max_age,ma.average_age
+ORDER BY AVG(om.year_ceremony - YEAR(ma.date_of_birth)) DESC
   LIMIT ${offset}, ${pageSize};
   `;
-
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -764,51 +729,6 @@ const oscar_actress = async function (req, res) {
   });
 };
 
-// Route 22: GET /movie_count
-// return a the total number of movies by selected criteria
-const movie_count = async function (req, res) {
-  const country = req.query.country ?? '';
-  const language = req.query.language ?? '';
-  const genre = req.query.genre ?? '';
-  const year = req.query.year;
-
-  var query1 = `
-   SELECT COUNT(imdb_title_id) as num
-   FROM movie_data
-   WHERE genre LIKE '%${genre}%' 
-   AND country LIKE '%${country}%' 
-   AND language LIKE '%${language}%'
-   AND year = ${year};
-   `;
-
-  var query2 = `
-   SELECT COUNT(imdb_title_id) as num
-   FROM movie_data
-   WHERE genre LIKE '%${genre}%' 
-   AND country LIKE '%${country}%' 
-   AND language LIKE '%${language}%';
-   `;
-
-  if (year) {
-    connection.query(query1, (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json({});
-      } else {
-        res.json(data[0]);
-      }
-    });
-  } else {
-    connection.query(query2, (err, data) => {
-      if (err || data.length === 0) {
-        console.log(err);
-        res.json({});
-      } else {
-        res.json(data[0]);
-      }
-    });
-  }
-}
 
 
 module.exports = {
@@ -822,12 +742,12 @@ module.exports = {
   avg_vote_person,
   related_actors,
   movie_people,
-  top10_rated_oscar_movies,
-  movie_count,
+  // top10_rated_oscar_movies,
+  // movie_count,
   oscarMovieRecommended,
   recentgenre,
   toplanguage,
-  search_oscar_people,
+  // search_oscar_people,
   search_oscar_filter,
   top_oscar_director,
   search_won,
