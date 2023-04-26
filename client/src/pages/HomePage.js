@@ -58,11 +58,6 @@ const [appAuthor, setAppAuthor] = useState("");
 
   return (
     <Container>
-      <Box>
-        <Divider>
-          <h1 style={{ color: "grey", float: "right" }}>MovieEase</h1>
-        </Divider>
-      </Box>
       <h1 style={{ textAlign: 'center' }}>Oscar Movie of the Day       </h1>
       <NoSsr>
         <MediaCard />

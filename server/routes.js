@@ -130,45 +130,28 @@ const movie_people = async (req, res) => {
 //Homepage: recommend an oscar winning movie to the user
 const oscarMovieRecommended = async function (req, res) {
   var query = `
-  WITH random_movie AS (
-    SELECT imdb_title_id
-    FROM oscar
-    WHERE winner = true
-    ORDER BY RAND()
-    LIMIT 5
-  )
-  SELECT
-    md.title,
-    md.poster_url,
-    md.description,
-    md.imdb_title_id,
-    COUNT(o.imdb_title_id) AS num_nominations,
-    md.year,
-    md.duration,
-    p.name AS director_name
-  FROM movie_data AS md
-  JOIN oscar AS o
-  ON md.imdb_title_id = o.imdb_title_id
-  JOIN random_movie
-  ON md.imdb_title_id = random_movie.imdb_title_id
-  JOIN movie_people AS mp
-  ON md.imdb_title_id = mp.imdb_title_id
-    AND mp.category = 'director'
-  JOIN people AS p
-  ON mp.imdb_name_id = p.imdb_name_id
-  WHERE md.title IS NOT NULL 
-  AND md.poster_url IS NOT NULL 
-  AND md.description IS NOT NULL 
-  AND md.year IS NOT NULL 
-  AND md.duration IS NOT NULL 
-  AND p.name IS NOT NULL
-  GROUP BY md.title,
-  md.poster_url,
-  md.description,
-  md.year,
-  md.duration,
-  director_name
-  LIMIT 1;  
+  SELECT md.title, 
+  md.poster_url, 
+  md.description, 
+  md.imdb_title_id, 
+  r.num_nominations, 
+  md.year, md.duration, 
+  p.name AS director_name
+FROM (
+         SELECT imdb_title_id, COUNT(imdb_title_id) AS num_nominations
+         FROM oscar
+         WHERE winner = true
+         GROUP BY imdb_title_id
+     ) AS r
+         JOIN movie_data AS md 
+         ON md.imdb_title_id = r.imdb_title_id
+         JOIN movie_people AS mp 
+         ON md.imdb_title_id = mp.imdb_title_id 
+         AND mp.category = 'director'
+         JOIN people AS p 
+         ON mp.imdb_name_id = p.imdb_name_id
+ORDER BY RAND()
+LIMIT 1;
   `
   connection.query(query, (err, data) => {
     if (err || data.length === 0) {
