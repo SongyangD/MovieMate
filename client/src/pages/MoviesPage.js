@@ -195,6 +195,7 @@ export default function MoviesPage() {
       });
   }, []);
 
+
   const search = () => {
     fetch(`http://${config.server_host}:${config.server_port}/search_movies?title=${title}` +
       `&genre=${selectedGenre}` +
@@ -205,6 +206,7 @@ export default function MoviesPage() {
     )
       .then(res => res.json())
       .then(resJson => setMovies(resJson));
+      setCurrentPage(1);
   }
 
   const handleChangePage = (page) => {

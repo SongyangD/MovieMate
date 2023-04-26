@@ -45,7 +45,7 @@ export default function Stats() {
                 route={`http://${config.server_host}:${config.server_port}/stats`}
                 columns={decadeColumns}
                 defaultPageSize={10}
-                rowsPerPageOptions={[0, 10]}
+                rowsPerPageOptions={[5, 10]}
             />
         </Container>
     );

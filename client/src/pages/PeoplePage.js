@@ -15,33 +15,36 @@ export default function PeoplePage() {
 
   const peoplePerPage = 30;
   const totalPeople = allPeople.length;
-  const totalPages = Math.ceil(totalPeople / peoplePerPage);              
+  const totalPages = Math.ceil(totalPeople / peoplePerPage);
   const indexOfLastPeople = currentPage * peoplePerPage;
   const indexOfFirstPeople = indexOfLastPeople - peoplePerPage;
   const currentPeople = allPeople && allPeople.length > 0 ? allPeople.slice(indexOfFirstPeople, indexOfLastPeople) : [];
-  
+
   const flexFormat = { display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly' };
 
- useEffect(() => {
-  fetch(`http://${config.server_host}:${config.server_port}/people`)
-          .then(res => res.json())
-          .then(resJson => {
-            setAllPeople(resJson);
-            setPeopleLoaded(true);
-          });
-      }, []);
-    
+  useEffect(() => {
+    fetch(`http://${config.server_host}:${config.server_port}/people`)
+      .then(res => res.json())
+      .then(resJson => {
+        setAllPeople(resJson);
+        setPeopleLoaded(true);
+      });
+  }, []);
+
   const search = () => {
     if (name.trim() === '') {
       alert('Please enter a name to search');
       return;
     }
-        fetch(`http://${config.server_host}:${config.server_port}/search_people?name=${name}`)
-          .then(res => res.json())
-          .then(resJson => setAllPeople(resJson));
-      }
-      const handleChangePage = (page) => {
-        setCurrentPage(page);}
+    fetch(`http://${config.server_host}:${config.server_port}/search_people?name=${name}`)
+      .then(res => res.json())
+      .then(resJson => setAllPeople(resJson));
+    setCurrentPage(1);
+  }
+  
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  }
 
   const imageStyle = {
     maxWidth: "200px", // Set the maximum width
@@ -50,9 +53,9 @@ export default function PeoplePage() {
   };
   // { width: '120%', height: '400px' } 
   return (
-  
+
     <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', display: "flex", flexDirection: "column" }}>
-       <Box
+      <Box
         component="form"
         sx={{
           '& > :not(style)': { m: 1, minwidth: '25ch' },
@@ -60,13 +63,13 @@ export default function PeoplePage() {
           flexWrap: 'nowrap',
           justifyContent: 'flex-end',
           alignItems: 'center',
-          width:'100%'
+          width: '100%'
         }}
         noValidate
         autoComplete="off"
-        >
-           <TextField
-          
+      >
+        <TextField
+
           label="Search by name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -94,16 +97,16 @@ export default function PeoplePage() {
         !peopleLoaded ? <Box sx={{ fontSize: 24 }}>Loading people...</Box> :
           <Box sx={{ fontSize: 24 }}>No people found</Box>
       )}
-      
+
       <div className="people-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '40px 0' }}>
-<Pagination
-      count={totalPages}
-      currentPage={currentPage}
-      onChangePage={handleChangePage}
-      sx={{ '& .MuiPaginationItem-root': { fontSize: '1.8rem', padding: '8px' } }}
-       />
-     </div>
+        <Pagination
+          count={totalPages}
+          currentPage={currentPage}
+          onChangePage={handleChangePage}
+          sx={{ '& .MuiPaginationItem-root': { fontSize: '1.8rem', padding: '8px' } }}
+        />
+      </div>
     </Container>
-   
+
   );
 }

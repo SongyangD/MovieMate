@@ -150,7 +150,7 @@ FROM (
          AND mp.category = 'director'
          JOIN people AS p 
          ON mp.imdb_name_id = p.imdb_name_id
-ORDER BY RAND()
+ORDER BY RAND(DATE_FORMAT(NOW(), '%Y-%m-%d'))
 LIMIT 1;
   `
   connection.query(query, (err, data) => {
