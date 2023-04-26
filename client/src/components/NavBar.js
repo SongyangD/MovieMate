@@ -36,10 +36,12 @@ export default function NavBar() {
     <AppBar position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <NavText href='/' text='RedCarpetAPI' isMain />
-          <NavText href='/movie' text='Movie' />
+        <NavText href='/' text='MovieMate' isMain />
+          <NavText href='/' text='Home' />
+          <NavText href='/movies' text='Movie' />
           <NavText href='/people' text='People' />
-          <NavText href='/oscar_movies' text='Oscar' />
+          <NavText href='/oscar' text='Oscar' />
+          <NavText href='/stats' text='Hall of Fame' />
         </Toolbar>
       </Container>
     </AppBar>
