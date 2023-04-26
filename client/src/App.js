@@ -6,8 +6,11 @@ import { createTheme } from "@mui/material/styles";
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import MoviesPage from './pages/MoviesPage';
-import SongsPage from './pages/SongsPage';
-import MoviesInfoPage from './pages/MoviesInfoPage'
+import MoviesInfoPage from "./pages/MoviesInfoPage";
+import Stats from "./pages/Stats";
+import PeoplePage from "./pages/PeoplePage";
+import PeopleInfoPage from "./pages/PeopleInfoPage";
+import OscarPage from "./pages/OscarPage";
 
 // createTheme enables you to customize the look and feel of your app past the default
 // in this case, we only change the color scheme
@@ -30,9 +33,12 @@ export default function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/people" element={<PeoplePage />} />
+          <Route path="/people/:imdb_name_id" element={<PeopleInfoPage />} />
           <Route path="/movies" element={<MoviesPage />} />
           <Route path="/movies/:movie_id" element={<MoviesInfoPage />} />
-          <Route path="/songs" element={<SongsPage />} />
+          <Route path="/oscar" element={<OscarPage />} />
+          <Route path="/stats" element={<Stats />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
