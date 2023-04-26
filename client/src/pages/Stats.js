@@ -35,7 +35,7 @@ export default function Stats() {
             <ActressesTable
                 fetchUrl={'oscar_actress'}
                 defaultPageSize={5}
-                rowsPerPageOptions={[0, 5]} />
+                rowsPerPageOptions={[5, 10]} />
             <Divider />
             <h2>Top Oscar Nominated Movies Participations</h2>
             <LazyTable

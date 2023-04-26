@@ -33,6 +33,7 @@ app.get('/search_won', routes.search_won);
 app.get('/top_oscar_director', routes.top_oscar_director);
 app.get('/stats', routes.oscar_decade);
 app.get('/oscar_actress', routes.oscar_actress);
+app.get('/movie_people_acted/:person_id', routes.movie_people_acted);
 
 
 app.listen(config.server_port, () => {

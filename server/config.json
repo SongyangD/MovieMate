@@ -1,5 +1,5 @@
 {
-  "rds_host": "database-1680.cgriemksgmwi.us-east-1.rds.amazonaws.com",
+  "rds_host": "database-1680.crijghduaxy0.us-east-1.rds.amazonaws.com",
   "rds_port": "3306",
   "rds_user": "admin",
   "rds_password": "168club!",

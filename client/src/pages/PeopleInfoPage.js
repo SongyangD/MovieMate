@@ -3,12 +3,16 @@ import { useParams } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import PeopleCard from '../components/PeopleCard';
 import { formatDuration, formatReleaseDate } from '../helpers/formatter';
-// import Carousel from "react-multi-carousel";
-// import "react-multi-carousel/lib/styles.css";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 import { Link, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Box, Container } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
+const handleAvatarClick = (event, person) => {
+  event.preventDefault();
+  window.location.href = `/people/${person.id}`;
+};
 
 const config = require('../config.json');
 
@@ -18,15 +22,9 @@ export default function PeopleInfoPage() {
   // console.log({imdb_name_id});
 
   const [peopleData, setPeopleData] = useState([]); // default should actually just be [], but empty object element added to avoid error in template code
-  // const [albumData, setAlbumData] = useState([]);
   const [avgVote, setAvgVote] = useState({});
   const [relatedActors, setRelatedActors] = useState([]);
   const [moviesActedIn, setMoviesActedIn] = useState([]);
-
-  const handleAvatarClick = (event, person) => {
-    event.preventDefault();
-    window.location.href = `/people/${person.id}`;
-  };
 
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/people/${imdb_name_id}`)
@@ -38,9 +36,9 @@ export default function PeopleInfoPage() {
     fetch(`http://${config.server_host}:${config.server_port}/related_actors/${imdb_name_id}`)
       .then(res => res.json())
       .then(resJson => setRelatedActors(resJson));
-    // fetch(`http://${config.server_host}:${config.server_port}/movie_people_acted/${imdb_name_id}`)
-    //   .then(res => res.json())
-    //   .then(resJson => setMoviesActedIn(resJson));
+    fetch(`http://${config.server_host}:${config.server_port}/movie_people_acted/${imdb_name_id}`)
+      .then(res => res.json())
+      .then(resJson => setMoviesActedIn(resJson));
   }, []);
   const responsive = {
     superLargeDesktop: {
@@ -80,28 +78,28 @@ export default function PeopleInfoPage() {
         {moviesActedIn && moviesActedIn.length > 0 && (
           <>
             <h3>Most Popular Movies</h3>
-            {/* <Carousel responsive={responsive}itemClass="carousel-item">
-            {moviesActedIn.map((movie) => (
-              <div key={movie.imdb_title_id}>
-                <NavLink to={`/movies/${movie.imdb_title_id}`}>
-                  <img src={movie.poster_url} alt={`${movie.title} poster`} style={{ width: '100%' }} />
-                </NavLink>
-              </div>
-            ))}
-          </Carousel> */}
+            <Carousel responsive={responsive} itemClass="carousel-item">
+              {moviesActedIn.map((movie) => (
+                <div key={movie.imdb_title_id}>
+                  <NavLink to={`/movies/${movie.imdb_title_id}`}>
+                    <img src={movie.poster_url} alt={`${movie.title} poster`} style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
+                  </NavLink>
+                </div>
+              ))}
+            </Carousel>
           </>
         )}
-          <Typography variant="h6" sx={{ mb: 2 }}>Related People</Typography>
-          <div style={{ display: 'flex', overflowX: 'scroll' }}>
-            {relatedActors.map(person => (
-              <div key={person.name} style={{ marginRight: 50 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>Related People</Typography>
+        <div style={{ display: 'flex', overflowX: 'scroll' }}>
+          {relatedActors.map(person => (
+            <div key={person.name} style={{ marginRight: 50 }}>
               <NavLink to={`/people/${person.id}`} exact style={{ zIndex: 1 }}>
                 <Avatar alt={person.name} src={person.photo_url} sx={{ width: 100, height: 100, cursor: 'pointer' }} onClick={(event) => handleAvatarClick(event, person)} />
               </NavLink>
               <Typography variant="subtitle1" sx={{ mt: 1 }}>{person.name}</Typography>
             </div>
-            ))}
-          </div>
+          ))}
+        </div>
       </div>
     </Container>
   )

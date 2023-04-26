@@ -36,7 +36,7 @@ export default function NavBar() {
     <AppBar position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <NavText href='/' text='MovieEase' isMain />
+          <NavText href='/' text='MovieMate' isMain />
           <NavText href='/' text='Home' />
           <NavText href='/movies' text='Movie' />
           <NavText href='/people' text='People' />

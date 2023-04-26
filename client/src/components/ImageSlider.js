@@ -4,14 +4,16 @@ const ImageSliders = ({slides, parentWidth}) => {
     const timerRef = useRef(null);
     
     const[currentIndex, setCurrentIndex] = useState(0);
+
     const sliderStyles = {
         height: "100%",
-        position: "relative",
+        position: "center",
     };
+
     const slideStyles={
         width: "100%",
         height: "100%",
-        borderRadius: "10px",
+        borderRadius: "0px",
         backgroundPosition: "center",
         backgroundPosition: "cover",
         backgroundImage: `url(${slides[currentIndex].url})`,
@@ -93,19 +95,23 @@ const ImageSliders = ({slides, parentWidth}) => {
         console.log("use effect");
         timerRef.current = setTimeout(()=> {
             goToNext();
-        }, 2000);
+        }, 3000);
         return () => clearTimeout(timerRef.current);
     }, [goToNext]);
    
 
+    //***************/
+  
+
     return (
         <div style={sliderStyles}>
+
           <div>
             <div onClick={goToPrevious} style={leftArrowStyles}>
-              ❰
+              
             </div>
             <div onClick={goToNext} style={rightArrowStyles}>
-              ❱
+              
             </div>
           </div>
           <div style={slidesContainerOverflowStyles}>
@@ -129,6 +135,11 @@ const ImageSliders = ({slides, parentWidth}) => {
               </div>
             ))}
           </div>
+          {/* display: "inline-block", */}
+          <div style={{textAlign: "center", marginTop: "20px",  backgroundColor: "#f0f5f1"}}>
+                <p>{slides[currentIndex].title}</p>
+                
+            </div>
         </div>
       );
     };
