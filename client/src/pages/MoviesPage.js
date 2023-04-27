@@ -1,43 +1,371 @@
 import { useEffect, useState } from 'react';
-import { Box, Container } from '@mui/material';
-import { NavLink } from 'react-router-dom';
+import Pagination from '../components/Pagination';
+import { Box, TextField, Checkbox, Container, MenuItem, Button, Slider, FormControlLabel, Typography } from '@mui/material';
+import Rating from '@mui/material/Rating';
+import Grid from '@mui/material/Grid';
+import defaultImage from '../images/i6.jpg';
+import Tooltip from '@mui/material/Tooltip';
+import { Card, CardContent, CardMedia } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const config = require('../config.json');
+const genres = ['All genres', 'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Reality-TV', 'Romance', 'Sci-Fi', 'Sport', 'Thriller', 'War', 'Western'];
+const languages = [
+  'All languages',
+  'Aboriginal',
+  'Afrikaans',
+  'Albanian',
+  'American Sign Language',
+  'Arabic',
+  'Armenian',
+  'Bengali',
+  'Bosnian',
+  'Bulgarian',
+  'Cantonese',
+  'Catalan',
+  'Chinese',
+  'Croatian',
+  'Czech',
+  'Dari',
+  'Danish',
+  'Dutch',
+  'English',
+  'Estonian',
+  'Finnish',
+  'Filipino',
+  'Flemish',
+  'French',
+  'Georgian',
+  'German',
+  'Greek',
+  'Hebrew',
+  'Hindi',
+  'Hokkien',
+  'Hungarian',
+  'Icelandic',
+  'Indonesian',
+  'Inuktitut',
+  'Irish',
+  'Italian',
+  'Japanese',
+  'Korean',
+  'Kurdish',
+  'Latin',
+  'Latvian',
+  'Lithuanian',
+  'Mandarin',
+  'Malayalam',
+  'Marathi',
+  'Min Nan',
+  'Norwegian',
+  'Persian',
+  'Polish',
+  'Portuguese',
+  'Punjabi',
+  'Quechua',
+  'Romanian',
+  'Romany',
+  'Russian',
+  'Scottish Gaelic',
+  'Serbian',
+  'Serbo-Croatian',
+  'Shanghainese',
+  'Slovak',
+  'Slovenian',
+  'Spanish',
+  'Swahili',
+  'Swedish',
+  'Swiss German',
+  'Tagalog',
+  'Tamil',
+  'Telugu',
+  'Thai',
+  'Tibetan',
+  'Turkish',
+  'Ukrainian',
+  'Urdu',
+  'Vietnamese',
+  'Wolof',
+  'Xhosa',
+  'Yiddish',
+  'Zulu'
+];
+const countries = [
+  'All countries',
+  'Algeria',
+  'Argentina',
+  'Australia',
+  'Austria',
+  'Belgium',
+  'Brazil',
+  'Bulgaria',
+  'Canada',
+  'Chile',
+  'China',
+  'Colombia',
+  'Croatia',
+  'Cuba',
+  'Czech Republic',
+  'Czechoslovakia',
+  'Denmark',
+  'East Germany',
+  'Egypt',
+  'Estonia',
+  'Finland',
+  'France',
+  'Georgia',
+  'Germany',
+  'Greece',
+  'Hong Kong',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Japan',
+  'Kazakhstan',
+  'Latvia',
+  'Lithuania',
+  'Luxembourg',
+  'Mexico',
+  'Morocco',
+  'Netherlands',
+  'New Zealand',
+  'Norway',
+  'Peru',
+  'Philippines',
+  'Poland',
+  'Portugal',
+  'Qatar',
+  'Romania',
+  'Russia',
+  'Senegal',
+  'Serbia',
+  'Singapore',
+  'Slovakia',
+  'Slovenia',
+  'South Africa',
+  'South Korea',
+  'Soviet Union',
+  'Spain',
+  'Sweden',
+  'Switzerland',
+  'Taiwan',
+  'Thailand',
+  'Tunisia',
+  'Turkey',
+  'UK',
+  'Ukraine',
+  'United Arab Emirates',
+  'Uruguay',
+  'USA',
+  'Venezuela',
+  'West Germany',
+  'Yugoslavia'
+];
 
 export default function MoviesPage() {
   const [movies, setMovies] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [moviesLoaded, setMoviesLoaded] = useState(false);
+
+  const [title, setTitle] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [checkIsOscar, setCheckIsOscar] = useState(false);
+  const [yearRange, setYearRange] = useState([1900, 2023]);
+
+  const moviesPerPage = 28;
+  const totalMovies = movies.length;
+  const totalPages = totalMovies > 0 ? Math.ceil(totalMovies / moviesPerPage) : 0;
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies = movies && movies.length > 0 ? movies.slice(indexOfFirstMovie, indexOfLastMovie) : [];
 
   useEffect(() => {
     fetch(`http://${config.server_host}:${config.server_port}/movies`)
       .then(res => res.json())
-      .then(resJson => setMovies(resJson));
+      .then(resJson => {
+        setMovies(resJson);
+        setMoviesLoaded(true);
+      });
   }, []);
 
-  // flexFormat provides the formatting options for a "flexbox" layout that enables the album cards to
-  // be displayed side-by-side and wrap to the next line when the screen is too narrow. Flexboxes are
-  // incredibly powerful. You can learn more on MDN web docs linked below (or many other online resources)
-  // https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox
-  const flexFormat = { display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-evenly' };
+
+  const search = () => {
+    fetch(`http://${config.server_host}:${config.server_port}/search_movies?title=${title}` +
+      `&genre=${selectedGenre}` +
+      `&language=${selectedLanguage}` +
+      `&country=${selectedCountry}` +
+      `&year_low=${yearRange[0]}&year_high=${yearRange[1]}` +
+      `&isOscar=${checkIsOscar}`
+    )
+      .then(res => res.json())
+      .then(resJson => setMovies(resJson));
+      setCurrentPage(1);
+  }
+
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  };
+
 
   return (
-    // TODO (TASK 22): replace the empty object {} in the Container attribute sx with flexFormat. Observe the change to the Albums page. Then uncomment the code to display the cover image and once again observe the change, i.e. what happens to the layout now that each album card has a fixed width?
-    <Container style={flexFormat}>
-      {movies.map((movie) =>
-        <Box
-          key={movie.imdb_title_id}
-          p={3}
-          m={2}
-          style={{ background: 'white', borderRadius: '16px', border: '2px solid #000' }}
+    <Container style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', display: "flex", flexDirection: "column" }}>
+      {/* search bar */}
+      <Box
+        component="form"
+        sx={{
+          '& > :not(style)': { m: 1, minwidth: '25ch' },
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          id="movieTitle"
+          label="Movie Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          helperText="Please input the title"
+        />
+        <TextField
+          id="genreSelection"
+          select
+          label="Genre"
+          value={selectedGenre}
+          onChange={(e) => setSelectedGenre(e.target.value === 'All genres' ? '' : e.target.value)}
+          defaultValue=""
+          helperText="Please select the genre"
         >
-          {
-          <img
-            src={movie.poster_url}
-            alt={`${movie.title}`}
-          />
+          {genres.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          id="languageSelection"
+          select
+          label="Language"
+          value={selectedLanguage}
+          onChange={(e) => setSelectedLanguage(e.target.value === 'All languages' ? '' : e.target.value)}
+          defaultValue=""
+          helperText="Please select the language"
+        >
+          {languages.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          id="countrySelection"
+          select
+          label="Country"
+          value={selectedCountry}
+          onChange={(e) => setSelectedCountry(e.target.value === 'All countries' ? '' : e.target.value)}
+          defaultValue=""
+          helperText="Please select the country"
+        >
+          {countries.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={checkIsOscar}
+              onChange={(e) => setCheckIsOscar(e.target.checked)}
+            // name="isOscar"
+            // color="primary"
+            />
           }
-          <h4><NavLink to={`/movies/${movie.imdb_title_id}`}>{movie.title}</NavLink></h4>
+          label="isOscar"
+        />
+        <Tooltip title="Please select the year range">
+          <Slider
+            value={yearRange}
+            onChange={(e, newValue) => setYearRange(newValue)}
+            valueLabelDisplay="auto"
+            aria-labelledby="year-range-slider"
+            min={1900}
+            max={2023}
+            step={1}
+            style={{ width: 200 }}
+          // helperText="Please select the year range"
+          />
+        </Tooltip>
+        {/* <Button onClick={() => search()} sx={{ alignSelf: 'flex-start', height: '55px', width: '30px' }}
+          variant="outlined"
+          size="small"
+        // sx={{ height: '50px', width: '20px' }}
+        >
+          Find
+        </Button> */}
+        <Button onClick={() => search()} style={{ left: '50%', transform: 'translateX(-50%)' }}>
+          Search
+        </Button>
+      </Box>
+      {/*poster*/}
+      {moviesLoaded && currentMovies && currentMovies.length > 0 ? (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '40px' }}>
+          {currentMovies.map(movie => (
+            <Card key={movie.id} sx={{ width: 'calc(25% - 10px)', minWidth: '250px' }}>
+              <Link to={`/movies/${movie.imdb_title_id}`}>
+                <CardMedia
+                  component="img"
+                  image={movie.poster_url ? movie.poster_url : defaultImage}
+                  alt={movie.title}
+                  height="450px"
+                  width="300px"
+                />
+              </Link>
+              <CardContent>
+                <Typography variant="h6" component="h2">
+                  {movie.title}
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <Rating value={movie.avg_vote / 2 + 0} precision={0.25} max={5} readOnly />
+                      <Typography variant="subtitle1" sx={{ marginLeft: '5px', fontSize: '20px', marginTop: '0px' }}>
+                        {`${(movie.avg_vote / 2).toFixed(1)}`}
+                      </Typography>
+                    </div>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          ))}
         </Box>
+      ) : (
+        !moviesLoaded ? <Box sx={{ fontSize: 24 }}>Loading movies...</Box> :
+          <Box sx={{ fontSize: 24 }}>No movies found</Box>
       )}
+      <div className="movie-page"
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '40px 0',
+          flex: "1 1 auto"
+        }}>
+        <Pagination
+          count={totalPages}
+          currentPage={currentPage}
+          onChangePage={handleChangePage}
+          sx={{ '& .MuiPaginationItem-root': { fontSize: '1.8rem', padding: '8px' } }} />
+      </div>
     </Container>
   );
 }
