@@ -11,6 +11,8 @@ app.use(cors({
 // We use express to define our various API endpoints and
 // provide their handlers that we implemented in routes.js
 
+// app.get('/song/:song_id', routes.song);
+app.get('/author/:type', routes.author);
 app.get('/movies/:movie_id', routes.movie);
 app.get('/movies', routes.movies);
 
@@ -20,17 +22,18 @@ app.get('/people', routes.people);
 app.get('/search_people', routes.search_people);
 app.get('/movie_people/:movie_id', routes.movie_people);
 app.get('/related_actors/:id', routes.related_actors);
-app.get('/top10_rated_oscar_movies', routes.top10_rated_oscar_movies);
-app.get('/movie_count', routes.movie_count);
 app.get('/avg_vote_person/:person_id', routes.avg_vote_person);
 app.get('/oscar_recommend', routes.oscarMovieRecommended);
-app.get('/recent10genre/:genre', routes.recent10genre);
-app.get('/top10language/:language', routes.top10language);
-app.get('/oscar', routes.search_oscar_people);
+app.get('/recentgenre/:genre', routes.recentgenre);
+app.get('/toplanguage/:language', routes.toplanguage);
 app.get('/search_oscar_filter', routes.search_oscar_filter);
 app.get('/search_won', routes.search_won);
 app.get('/top_oscar_director', routes.top_oscar_director);
 app.get('/stats', routes.oscar_decade);
+app.get('/oscar_actress', routes.oscar_actress);
+app.get('/movie_people_acted/:person_id', routes.movie_people_acted);
+
+
 
 
 app.listen(config.server_port, () => {
