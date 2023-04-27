@@ -292,7 +292,6 @@ const search_people = async function (req, res) {
     SELECT *
     FROM people
     WHERE name LIKE '%${name}%'
-    ORDER BY name ASC
   `;
 
   connection.query(query1, (err, data) => {
