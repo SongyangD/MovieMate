@@ -410,69 +410,6 @@ const related_actors = async function (req, res) {
  * OSCAR ROUTES *
  ************************/
 
-// Route 15: GET / search_oscar_filter
-// 奥斯卡页主体
-const search_oscar_filter = async function (req, res) {
-
-  //输入 1) no title, language, 2) no title, no language, 3) title, language, 4) title, no language
-  // 4 个组合 vs 语言必须
-  const title = req.query.title ?? '';
-  const language = req.query.language ?? '';
-
-  //滑杆 duration / year
-  const durationLow = req.query.duration_low ?? 0;
-  const durationHigh = req.query.duration_high ?? 600;
-
-  var query_title = `
-      SELECT *
-      FROM oscar O, movie_data M    
-      WHERE M.title LIKE '%${title}%'  
-            AND M.duration <= ${durationHigh} AND M.duration >= ${durationLow}
-            AND M.language LIKE '%${language}%'
-            AND O.imdb_title_id = M.imdb_title_id
-      Order By M.title;
-         
-  `;
-
-
-  var query_no_title = `
-      SELECT *
-      FROM oscar O, movie_data M
-      WHERE M.duration <= ${durationHigh} AND M.duration >= ${durationLow}
-            AND M.language LIKE '%${language}%'
-            AND O.imdb_title_id = M.imdb_title_id
-      Order by M.title;
-`;
-
-
-  // if title empty
-  if (title === '') {
-    connection.query(query_no_title, function (err, data) {
-      if (err) {
-        console.log(err);
-        res.json({});
-      } else if (data.length == 0) { // no match
-        res.json([]);
-      } else {
-        // console.log(data);
-        res.json(data);
-      }
-    })
-  } else { // if title
-    connection.query(query_title, function (err, data) {
-      if (err) {
-        console.log(err);
-        res.json({});
-      } else if (data.length == 0) { // no match
-        res.json([]);
-      } else {
-        console.log(data);
-        res.json(data);
-      }
-    })
-  }
-}
-
 // Route 16: GET /search_won 
 const search_won = async function (req, res) {
   // const page = parseInt(req.query.page) || 1;
